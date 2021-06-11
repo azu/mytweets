@@ -4,21 +4,12 @@ import regexCombiner from "regex-combiner";
 import twitter from "twitter-text";
 import split2 from "split2";
 import * as fs from "fs";
-
+import getConfig from "next/config";
+import path from "path";
+const { serverRuntimeConfig } = getConfig();
 export type SearchQuery = {
     q: string;
     max?: string;
-};
-export type BookmarkItem = {
-    title: string;
-    url: string;
-    date: string;
-    content: string;
-    tags: string[];
-    relatedLinks?: {
-        title: string;
-        url: string;
-    }[];
 };
 export type LineTweet = {
     id: string;
@@ -70,7 +61,7 @@ const handler = nc().get<{
         );
     }
     const stats = require("../../tweets-stats.json");
-    const inputStream = fs.createReadStream("./tweets.json", {
+    const inputStream = fs.createReadStream(path.join(serverRuntimeConfig.PROJECT_ROOT, "tweets.json"), {
         encoding: "utf-8"
     });
     let count = 0;
