@@ -9,7 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function main() {
     const rootDir = path.join(__dirname, "../twitter-archives");
     const outputDir = path.join(__dirname, "../data");
+    const outputRawFilePath = path.join(outputDir, "/tweets-raw.json");
     const outputFilePath = path.join(outputDir, "/tweets.json");
+    const outputRFilePath = path.join(outputDir, "/tweets-r.json");
+    const outputStatFilePath = path.join(outputDir, "/tweets-stats.json");
     const dirents = await fs.readdir(rootDir, {
         withFileTypes: true
     });
@@ -19,9 +22,7 @@ async function main() {
         })
         .map((dirent) => {
             return path.join(rootDir, dirent.name);
-        })
-        .sort()
-        .reverse();
+        });
     const fileContentList: SearchKeywordResponse[][] = await Promise.all(
         filePathsList.map(async (filePath) => {
             const content = await fs.readFile(filePath, "utf-8");
@@ -34,7 +35,26 @@ async function main() {
             return convertToLineTweet(item.tweet);
         });
     });
-    await fs.writeFile(outputFilePath, results.map((result) => JSON.stringify(result)).join("\n"), "utf-8");
+    const sortedResults = results.sort((a, b) => {
+        return a.timestamp > b.timestamp ? 1 : -1;
+    });
+    await fs.writeFile(outputFilePath, sortedResults.map((result) => JSON.stringify(result)).join("\n"), "utf-8");
+    await fs.writeFile(
+        outputRFilePath,
+        sortedResults
+            .reverse()
+            .map((result) => JSON.stringify(result))
+            .join("\n"),
+        "utf-8"
+    );
+    await fs.writeFile(outputRawFilePath, JSON.stringify(sortedResults.reverse()), "utf-8");
+    await fs.writeFile(
+        outputStatFilePath,
+        JSON.stringify({
+            total: sortedResults.length
+        }),
+        "utf-8"
+    );
 }
 
 main().catch((error) => {
