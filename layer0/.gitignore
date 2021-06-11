@@ -1,4 +1,5 @@
 tweets.json
+tweets*.json
 dist
 # Layer0 generated build directory
 .layer0

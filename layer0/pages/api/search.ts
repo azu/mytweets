@@ -7,6 +7,7 @@ import * as fs from "fs";
 
 export type SearchQuery = {
     q: string;
+    max?: string;
 };
 export type BookmarkItem = {
     title: string;
@@ -55,10 +56,12 @@ const handler = nc().get<{
     query: SearchQuery;
 }>((req, res) => {
     const query = req.query.q;
+    const max = req.query.max ? Number(req.query.max) : 100;
     if (typeof query !== "string") {
         throw new Error("invalid ?q=");
     }
     const queries = query.split(/\s+/);
+    const emptyQuery = queries.filter((query) => query.length > 0).length === 0;
     if (queries.length === 0) {
         return res.end(
             JSON.stringify({
@@ -66,11 +69,12 @@ const handler = nc().get<{
             })
         );
     }
+    const stats = require("../../tweets-stats.json");
     const inputStream = fs.createReadStream("./tweets.json", {
         encoding: "utf-8"
     });
-    const searchResults = [];
     let count = 0;
+    const searchResults = [];
     const send = (response: SearchResponse): void => {
         res.write(JSON.stringify(response) + "\n"); // line by line
     };
@@ -78,9 +82,13 @@ const handler = nc().get<{
         .pipe(split2())
         .on("data", (line) => {
             count++;
-            if (count >= 30) {
-                inputStream.destroy();
-                return;
+            if (searchResults.length >= max) {
+                send({
+                    type: "count",
+                    progress: count,
+                    total: stats.total
+                });
+                return inputStream.close();
             }
             const isMatch = matchText(line, queries);
             if (isMatch) {
@@ -100,15 +108,19 @@ const handler = nc().get<{
                 }
             }
             if (count % 1000 === 0) {
-                console.log(count);
                 send({
                     type: "count",
                     progress: count,
-                    total: 0
+                    total: stats.total
                 });
             }
         })
         .on("end", () => {
+            send({
+                type: "count",
+                progress: count,
+                total: count
+            });
             res.end();
         });
 });

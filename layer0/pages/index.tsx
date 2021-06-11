@@ -249,11 +249,19 @@ const useSearch = (items: LineTweetResponse[] = []) => {
     const [searchCounts, setSearchCounts] = useState<{ progress: number; total: number }>({ progress: 0, total: 0 });
     const [searchResults, setSearchResults] = useState<LineTweetResponse[]>(items);
     const [debouncedQuery] = useDebounce(query, 300);
+    const sortedSearchResults = useMemo(() => {
+        return searchResults.sort((a, b) => {
+            return a.timestamp < b.timestamp ? 1 : -1;
+        });
+    }, [searchResults]);
     useEffect(() => {
+        const searchParams = new URLSearchParams([["q", query]]);
+        const decoder = new TextDecoder();
+        const abortController = new AbortController();
         (async function fetchMain() {
-            const searchParams = new URLSearchParams([["q", query]]);
-            const decoder = new TextDecoder();
-            const response = await fetch("/api/search?" + searchParams.toString());
+            const response = await fetch("/api/search?" + searchParams.toString(), {
+                signal: abortController.signal
+            });
             const reader = response.body.getReader();
             const handleResponse = (response: SearchResponse) => {
                 if (response.type === "count") {
@@ -279,20 +287,32 @@ const useSearch = (items: LineTweetResponse[] = []) => {
                         console.log(item);
                     }
                 }) as SearchResponse[];
+                console.log("responses", responses);
                 responses.forEach((response) => handleResponse(response));
-                // 次の値を読む。
-                reader.read().then(readChunk);
+                reader
+                    .read()
+                    .then(readChunk)
+                    .catch((error) => {
+                        console.log("readChunk Abort", error);
+                    });
             };
+            return reader
+                .read()
+                .then(readChunk)
+                .catch((error) => {
+                    console.log("readChunk Abort", error);
+                });
+        })().catch((error) => {
+            console.log("Fetch Abort", error);
+        });
+        return () => {
             setSearchCounts({
                 total: 0,
                 progress: 0
             });
             setSearchResults([]);
-            // 値を読み始める。
-            reader.read().then(readChunk);
-            // const res: SearchResponse = await fetch("/api/search?" + searchParams.toString()).then(res => res.json());
-            // setSearchResults(res.results);
-        })();
+            abortController.abort();
+        };
     }, [debouncedQuery]);
     const handlers = useMemo(
         () => ({
@@ -306,6 +326,7 @@ const useSearch = (items: LineTweetResponse[] = []) => {
         query,
         searchCounts,
         searchResults,
+        sortedSearchResults,
         handlers
     };
 };
@@ -315,7 +336,7 @@ type HomePageProps = {
 };
 
 function HomePage(props: HomePageProps) {
-    const { query, searchResults, searchCounts, handlers } = useSearch(props.items);
+    const { query, sortedSearchResults, searchCounts, handlers } = useSearch(props.items);
     return (
         <div
             style={{
@@ -326,7 +347,7 @@ function HomePage(props: HomePageProps) {
             }}
         >
             <Head>
-                <title>JSer.info Archive Search</title>
+                <title>mytweets</title>
             </Head>
             <GlobalStyle />
             <div
@@ -365,7 +386,7 @@ function HomePage(props: HomePageProps) {
                 </label>
                 <div>
                     <span>
-                        Hit: {searchResults.length} Count: {searchCounts.progress} / {searchCounts.total}
+                        Hit: {sortedSearchResults.length} Count: {searchCounts.progress} / {searchCounts.total}
                     </span>
                 </div>
             </div>
@@ -375,7 +396,7 @@ function HomePage(props: HomePageProps) {
                     padding: 0
                 }}
             >
-                {searchResults.map((item) => {
+                {sortedSearchResults.map((item) => {
                     const day = dayjs(item.timestamp);
                     return (
                         <li
