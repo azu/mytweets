@@ -7,6 +7,7 @@ import * as fs from "fs";
 import getConfig from "next/config";
 import path from "path";
 const { serverRuntimeConfig } = getConfig();
+
 export type SearchQuery = {
     q: string;
     max?: string;
@@ -29,10 +30,6 @@ export type SearchCountResponse = {
     total: number;
 };
 export type SearchResponse = SearchCountResponse | LineTweetResponse;
-const stringifyBookmarkItem = (tweet: LineTweet): string => {
-    return tweet.text.toLowerCase();
-};
-
 const memoriezdRegexCombiner = memoize((searchWord: string[]) => {
     // @ts-ignore
     const pattern = regexCombiner(searchWord);
@@ -41,7 +38,7 @@ const memoriezdRegexCombiner = memoize((searchWord: string[]) => {
 export const matchText = (lineText: string, searchWords: string[]): boolean => {
     const text = lineText;
     const combined = memoriezdRegexCombiner(searchWords);
-    return combined.test(text);
+    return combined.test(text.toLowerCase());
 };
 const handler = nc().get<{
     query: SearchQuery;
@@ -61,7 +58,7 @@ const handler = nc().get<{
         );
     }
     const stats = require("../../tweets-stats.json");
-    const inputStream = fs.createReadStream(path.join(serverRuntimeConfig.PROJECT_ROOT, "tweets.json"), {
+    const inputStream = fs.createReadStream(new URL("../../tweets.json", import.meta.url), {
         encoding: "utf-8"
     });
     let count = 0;
