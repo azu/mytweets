@@ -347,6 +347,7 @@ function HomePage() {
         >
             <Head>
                 <title>mytweets</title>
+                <base target="_blank" />
             </Head>
             <GlobalStyle />
             <div
