@@ -24,7 +24,14 @@ export type LineTweetResponse = {
     timestamp: number;
 };
 const escapeLike = (s: string) => {
-    return s.split("'").join("''");
+    return (
+        s
+            .split("'")
+            .join("''")
+            // workaround: S3 Select can not select < and >
+            .replace(/</g, "_")
+            .replace(/>/g, "_")
+    );
 };
 export default async function handler(req, res) {
     if (req.method !== "GET") {
