@@ -4,6 +4,7 @@ permissions: read-all
 jobs:
   test:
     name: "Test on Node.js ${{ matrix.node-version }}"
+    if: github.repository == 'azu/mytweets' # For testing
     runs-on: ubuntu-18.04
     strategy:
       matrix:
