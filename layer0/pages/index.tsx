@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { LineTweetResponse, SearchResponse } from "./api/search";
+import { SearchResponse, LineTweetResponse } from "./api/search";
 import { useDebounce } from "use-debounce";
 import Head from "next/head";
 import { SiTwitter } from "react-icons/si";
@@ -240,14 +240,18 @@ const GlobalStyle = () => {
                 article:last-child {
                     margin-right: 0;
                 }
+
+                .Tweet-Item:hover {
+                    background-color: rgba(0, 0, 0, 0.02);
+                }
             `}
         </style>
     );
 };
-const useSearch = (items: LineTweetResponse[] = []) => {
+const useSearch = () => {
     const [query, setQuery] = useState<string>("");
     const [searchCounts, setSearchCounts] = useState<{ progress: number; total: number }>({ progress: 0, total: 0 });
-    const [searchResults, setSearchResults] = useState<LineTweetResponse[]>(items);
+    const [searchResults, setSearchResults] = useState<LineTweetResponse[]>([]);
     const [debouncedQuery] = useDebounce(query, 300);
     const sortedSearchResults = useMemo(() => {
         return searchResults.sort((a, b) => {
@@ -262,55 +266,21 @@ const useSearch = (items: LineTweetResponse[] = []) => {
             const response = await fetch("/api/search?" + searchParams.toString(), {
                 signal: abortController.signal
             });
-            const reader = response.body.getReader();
-            const handleResponse = (response: SearchResponse) => {
-                if (response.type === "count") {
-                    return setSearchCounts({
-                        progress: response.progress,
-                        total: response.total
-                    });
-                } else if (response.type === "tweet") {
-                    return setSearchResults((prevState) => prevState.concat(response));
-                }
-            };
-            const readChunk = ({ done, value }) => {
-                if (done) {
-                    return;
-                }
-                const text = decoder.decode(value).trim();
-                const chunks = text.split(/\r?\n/);
-                const responses = chunks.map((item) => {
-                    try {
-                        return JSON.parse(item);
-                    } catch (error) {
-                        console.error(error);
-                        console.log(item);
-                    }
-                }) as SearchResponse[];
-                console.log("responses", responses);
-                responses.forEach((response) => handleResponse(response));
-                reader
-                    .read()
-                    .then(readChunk)
-                    .catch((error) => {
-                        console.log("readChunk Abort", error);
-                    });
-            };
-            return reader
-                .read()
-                .then(readChunk)
-                .catch((error) => {
-                    console.log("readChunk Abort", error);
-                });
+            const json: SearchResponse = await response.json();
+            setSearchCounts({
+                progress: json.stats.BytesProcessed,
+                total: json.stats.BytesScanned
+            });
+            setSearchResults(json.results);
         })().catch((error) => {
             console.log("Fetch Abort", error);
         });
         return () => {
-            setSearchCounts({
-                total: 0,
-                progress: 0
-            });
-            setSearchResults([]);
+            // setSearchCounts({
+            //     total: 0,
+            //     progress: 0
+            // });
+            // setSearchResults([]);
             abortController.abort();
         };
     }, [debouncedQuery]);
@@ -331,12 +301,10 @@ const useSearch = (items: LineTweetResponse[] = []) => {
     };
 };
 
-type HomePageProps = {
-    items: LineTweetResponse[];
-};
+type HomePageProps = {};
 
 function HomePage(props: HomePageProps) {
-    const { query, sortedSearchResults, searchCounts, handlers } = useSearch(props.items);
+    const { query, sortedSearchResults, searchCounts, handlers } = useSearch();
     return (
         <div
             style={{
@@ -355,35 +323,38 @@ function HomePage(props: HomePageProps) {
                     width: "100%",
                     display: "flex",
                     alignContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    flexWrap: "wrap"
                 }}
             >
-                <a
-                    href={"https://github.com/jser/jser.info/tree/gh-pages/layer0"}
-                    title={"GitHub"}
-                    style={{
-                        display: "inline-flex",
-                        alignContent: "center",
-                        alignItems: "center",
-                        paddingRight: "4px"
-                    }}
-                >
-                    <SiTwitter />
-                </a>
-                <label>
-                    Search:
-                    <input
-                        type={"text"}
-                        value={query}
-                        onChange={(event) => handlers.search(event.currentTarget.value)}
+                <div>
+                    <a
+                        href={"https://github.com/azu/mytweets"}
+                        title={"GitHub"}
                         style={{
-                            fontSize: "20px",
-                            width: "18em",
-                            margin: "0 0.5em",
-                            padding: "0 0.2em"
+                            display: "inline-flex",
+                            alignContent: "center",
+                            alignItems: "center",
+                            paddingRight: "4px"
                         }}
-                    />
-                </label>
+                    >
+                        <SiTwitter />
+                    </a>
+                    <label>
+                        Search:
+                        <input
+                            type={"text"}
+                            value={query}
+                            onChange={(event) => handlers.search(event.currentTarget.value)}
+                            style={{
+                                fontSize: "20px",
+                                width: "18em",
+                                margin: "0 0.5em",
+                                padding: "0 0.2em"
+                            }}
+                        />
+                    </label>
+                </div>
                 <div>
                     <span>
                         Hit: {sortedSearchResults.length} Count: {searchCounts.progress} / {searchCounts.total}
@@ -401,6 +372,7 @@ function HomePage(props: HomePageProps) {
                     return (
                         <li
                             key={item.id}
+                            className={"Tweet-Item"}
                             style={{
                                 paddingBottom: "1rem",
                                 display: "flex",
@@ -416,8 +388,8 @@ function HomePage(props: HomePageProps) {
                             >
                                 <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
                                     <SiTwitter size={12} />
+                                    <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
                                 </a>
-                                <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
                             </span>
                             <p
                                 style={{

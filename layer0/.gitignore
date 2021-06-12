@@ -7,3 +7,6 @@ dist
 .next
 # Layer0 generated build directory
 .layer0
+.serverless
+.serverless_nextjs
+s3/
