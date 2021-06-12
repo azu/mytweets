@@ -10,7 +10,13 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 config();
 const uploadStream = ({ Bucket, Key }: AWS.S3.PutObjectRequest) => {
-    const s3 = new AWS.S3();
+    const s3 = new AWS.S3({
+        apiVersion: "2006-03-01",
+        credentials: new AWS.Credentials({
+            accessKeyId: process.env.S3_AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.S3_AWS_SECRET_ACCESS_KEY!
+        })
+    });
     const pass = new stream.PassThrough();
     return {
         writeStream: pass,
