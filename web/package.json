@@ -1,6 +1,9 @@
 {
   "scripts": {
+    "cpenv": "cp ../.env ./",
+    "predev": "npm run cpenv",
     "dev": "next dev",
+    "prebuild": "npm run cpenv",
     "build": "next build",
     "start": "next start"
   },
