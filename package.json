@@ -33,7 +33,7 @@
   "scripts": {
     "import-twitter-archieves": "node --loader ts-node/esm ./scripts/import-twitter-archieves.ts",
     "tweets": "node --loader ts-node/esm ./scripts/twitter-mytweets.ts",
-    "gzip": "node --loader ts-node/esm ./scripts/tweets-gz.ts",
+    "upload-tweets": "node --loader ts-node/esm ./scripts/tweets-gz.ts",
     "test": "mocha",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "git config --local core.hooksPath .githooks",

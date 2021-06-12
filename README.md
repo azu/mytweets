@@ -12,10 +12,49 @@ Search My all tweets.
 ```
 twitter-archives/
 ├── tweet.js
+├── tweet-part1.js
 └── tweet-part2.js
 ```
 
 4. Run `yarn import-twitter-archieves`
+
+### Fetch the latest tweets and merge
+
+1. Get API_KEY, API_KEY_SECRETE, ACCESS_KEY, ACCESS_KEY_SECRETS
+2. `cp .env.example .env`, and fill it
+3. Run `yarn tweets`
+
+### Upload tweets to S3
+
+1. Fill `S3_AWS_ACCESS_KEY_ID`, `S3_AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
+    - require GET,PUT,List permissions for S3
+   
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "mytweets",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::YOUR_S3_BUCKET_NAME/*"
+        }
+    ]
+}
+```
+
+2. Run `yarn upload-tweets`
+
+### Deploy Website
+
+Require [The Serverless Application Framework | Serverless.com](https://www.serverless.com/).
+
+```
+npm install --global serverless
+cd web
+sls deploy
+```
 
 ## Changelog
 
