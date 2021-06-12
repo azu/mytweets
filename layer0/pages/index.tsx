@@ -4,6 +4,7 @@ import { useDebounce } from "use-debounce";
 import Head from "next/head";
 import { SiTwitter } from "react-icons/si";
 import { FaSpinner } from "react-icons/fa";
+import { MdUpdate, MdPerson } from "react-icons/md";
 import dayjs from "dayjs";
 
 const GlobalStyle = () => {
@@ -263,6 +264,7 @@ const GlobalStyle = () => {
     );
 };
 const useSearch = () => {
+    const [screenName, setScreenName] = useState<string>("");
     const [query, setQuery] = useState<string>("");
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [searchCounts, setSearchCounts] = useState<{ progress: number; total: number }>({ progress: 0, total: 0 });
@@ -277,6 +279,9 @@ const useSearch = () => {
         const url = new URL(location.href);
         if (url.searchParams.has("q")) {
             setQuery(url.searchParams.get("q"));
+        }
+        if (url.searchParams.has("screen_name")) {
+            setScreenName(encodeURIComponent(url.searchParams.get("screen_name")));
         }
     }, []);
 
@@ -317,6 +322,7 @@ const useSearch = () => {
         []
     );
     return {
+        screenName,
         query,
         isFetching,
         searchCounts,
@@ -327,7 +333,7 @@ const useSearch = () => {
 };
 
 function HomePage() {
-    const { query, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch();
+    const { query, screenName, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch();
     return (
         <div
             style={{
@@ -421,6 +427,45 @@ function HomePage() {
                                     <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
                                         <SiTwitter size={12} />
                                         <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
+                                    </a>
+                                    <a
+                                        href={`https://twitter.com/search?q=${encodeURIComponent(
+                                            "filter:follows since:" +
+                                                day.format("YYYY-MM-DD_HH:mm:ss") +
+                                                " until:" +
+                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss") +
+                                                ""
+                                        )}&src=typed_query&f=live`}
+                                        title={"Search this date"}
+                                        target={"_blank"}
+                                    >
+                                        <MdUpdate
+                                            size={12}
+                                            style={{
+                                                margin: "0 4px"
+                                            }}
+                                        />
+                                    </a>
+
+                                    <a
+                                        href={`https://twitter.com/search?q=${encodeURIComponent(
+                                            "from:" +
+                                                screenName +
+                                                " since:" +
+                                                day.format("YYYY-MM-DD_HH:mm:ss") +
+                                                " until:" +
+                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss") +
+                                                ""
+                                        )}&src=typed_query&f=live`}
+                                        title={"Search this date from me"}
+                                        target={"_blank"}
+                                    >
+                                        <MdPerson
+                                            size={12}
+                                            style={{
+                                                margin: "0 4px"
+                                            }}
+                                        />
                                     </a>
                                 </span>
                                 <p
