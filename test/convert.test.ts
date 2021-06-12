@@ -1,5 +1,5 @@
-import { convertAPIToLineTweet, convertArchieveToLineTweet } from "../scripts/utils/converter.js";
 import assert from "assert";
+import { convertAPIToLineTweet, convertArchieveToLineTweet } from "../scripts/utils/converter.js";
 
 describe("convertAPIToLineTweet", function () {
     it("convert API to line", () => {
