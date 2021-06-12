@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "sls": "node -r dotenv/config ./node_modules/.bin/sls",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"

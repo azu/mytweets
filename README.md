@@ -34,8 +34,8 @@ twitter-archives/
 ### Upload tweets to S3
 
 1. Fill `S3_AWS_ACCESS_KEY_ID`, `S3_AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
-    - require GET,PUT,List permissions for S3
-   
+   - require GET,PUT,List permissions for S3
+   - `S3_BUCKET_NAME` is any name
 
 ```json
 {
