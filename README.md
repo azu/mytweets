@@ -59,7 +59,7 @@ Require [The Serverless Application Framework | Serverless.com](https://www.serv
 
 ```
 npm install --global serverless
-cd web
+cd web/
 sls deploy
 ```
 
