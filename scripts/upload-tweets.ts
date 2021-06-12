@@ -27,9 +27,7 @@ const uploadStream = ({ Bucket, Key }: AWS.S3.PutObjectRequest) => {
     };
 };
 
-async function main() {
-    const dataDir = path.join(__dirname, "../data");
-    const tweetsJSONFilePath = path.join(dataDir, "tweets-r.json");
+export async function uploadTweets(tweetsJsonFilePath: string) {
     const bucket = process.env.S3_BUCKET_NAME;
     if (!bucket) {
         throw new Error("S3_BUCKET_NAME should be set!");
@@ -38,7 +36,7 @@ async function main() {
         Bucket: bucket,
         Key: "tweets.json.gz"
     });
-    fs.createReadStream(tweetsJSONFilePath)
+    fs.createReadStream(tweetsJsonFilePath)
         .pipe(zlib.createGzip())
         .pipe(writeStream)
         .on("error", (error) => {
@@ -48,7 +46,12 @@ async function main() {
     console.log("upload success");
 }
 
-main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+const selfScriptFilePath = url.fileURLToPath(import.meta.url);
+if (process.argv[1] === selfScriptFilePath) {
+    const dataDir = path.join(__dirname, "../data");
+    const tweetsJsonFilePath = path.join(dataDir, "tweets.json");
+    uploadTweets(tweetsJsonFilePath).catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
+}

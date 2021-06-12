@@ -31,9 +31,9 @@
     "src/"
   ],
   "scripts": {
-    "import-twitter-archieves": "node --loader ts-node/esm ./scripts/import-twitter-archieves.ts",
-    "tweets": "node --loader ts-node/esm ./scripts/twitter-mytweets.ts",
-    "upload-tweets": "node --loader ts-node/esm ./scripts/tweets-gz.ts",
+    "import-twitter-archives": "node --loader ts-node/esm ./scripts/import-twitter-archives.ts",
+    "fetch-tweets": "node --loader ts-node/esm ./scripts/fetch-tweets.ts",
+    "upload-tweets": "node --loader ts-node/esm ./scripts/upload-tweets.ts",
     "test": "mocha",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "git config --local core.hooksPath .githooks",

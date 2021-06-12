@@ -10,30 +10,19 @@ Search My all tweets.
 
 ## Usage
 
-### Import from Twitter archive
+## Setups
 
-1. Request [your Twitter archive](https://help.twitter.com/en/managing-your-account/how-to-download-your-twitter-archive)
-2. Download Twitter archive file like `twitter-*.zip`
-3. Copy `tweeet*.js` to `twitter-archives/`
+This application require following tokens:
 
-```
-twitter-archives/
-├── tweet.js
-├── tweet-part1.js
-└── tweet-part2.js
-```
+- Twitter API token
+- S3 Access keys
+- S3 buckets for saving tweets.json
 
-4. Run `yarn import-twitter-archieves`
+### Twitter
 
-### Fetch the latest tweets and merge
+### S3
 
-1. Get API_KEY, API_KEY_SECRETE, ACCESS_KEY, ACCESS_KEY_SECRETS
-2. `cp .env.example .env`, and fill it
-3. Run `yarn tweets`
-
-### Upload tweets to S3
-
-1. Fill `S3_AWS_ACCESS_KEY_ID`, `S3_AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
+- Fill `S3_AWS_ACCESS_KEY_ID`, `S3_AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
    - require GET,PUT,List permissions for S3
    - `S3_BUCKET_NAME` is any name
 
@@ -51,7 +40,39 @@ twitter-archives/
 }
 ```
 
-2. Run `yarn upload-tweets`
+### Import from Twitter archive
+
+1. Request [your Twitter archive](https://help.twitter.com/en/managing-your-account/how-to-download-your-twitter-archive)
+2. Download Twitter archive file like `twitter-*.zip`
+3. Copy `tweeet*.js` to `twitter-archives/`
+
+```
+twitter-archives/
+├── tweet.js
+├── tweet-part1.js
+└── tweet-part2.js
+```
+
+4. Run import commands:
+   
+```
+yarn install
+yarn import-twitter-archives # Concvert twitter-archives
+yarn fetch-tweets  # Fetch diffs via Twitter API
+yarn upload-tweets # upload to S3
+```
+
+### Fetch the latest tweets and merge
+
+1. Get API_KEY, API_KEY_SECRETE, ACCESS_KEY, ACCESS_KEY_SECRETS
+2. `cp .env.example .env`, and fill it
+3. Run following command:
+
+```
+yarn install
+yarn fetch-tweets  # Fetch diffs via Twitter API
+yarn upload-tweets # upload to S3
+```
 
 ### Deploy Website
 
@@ -60,6 +81,7 @@ Require [The Serverless Application Framework | Serverless.com](https://www.serv
 ```
 npm install --global serverless
 cd web/
+yarn install
 sls deploy
 ```
 

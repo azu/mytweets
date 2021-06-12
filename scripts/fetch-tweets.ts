@@ -2,7 +2,7 @@ import { TwitterApi } from "twitter-api-v2";
 import firstline from "firstline";
 import * as url from "url";
 import path from "path";
-import type { LineTweet } from "../src/types";
+import type { LineTweet } from "./types/output";
 import { TweetUserTimelineV2Paginator } from "twitter-api-v2/dist/paginators";
 import { convertAPIToLineTweet } from "./utils/converter.js";
 import * as fs from "fs/promises";
@@ -35,17 +35,22 @@ export const collectTweetsUntil = async (
     return results;
 };
 
-async function main() {
-    const outputDir = path.join(__dirname, "../data");
-    const tweetsJSONFilePath = path.join(outputDir, "/tweets-r.json");
-    const lastTweets = await firstline(tweetsJSONFilePath);
+/**
+ *
+ * @param tweetsJsonFilePath merge filePath
+ */
+export async function fetchTweets(tweetsJsonFilePath: string) {
+    await fs.mkdir(path.dirname(tweetsJsonFilePath), {
+        recursive: true
+    });
+    const lastTweets = await firstline(tweetsJsonFilePath);
     const lastTweet: LineTweet = JSON.parse(lastTweets);
     console.log("lastTweet", lastTweet);
     const client = new TwitterApi({
         appKey: process.env.TWITTER_APP_KEY!,
         appSecret: process.env.TWITTER_APP_SECRET!,
-        accessToken: process.env.TWITTER_ACCESSTOKEN!,
-        accessSecret: process.env.TWITTER_ACCESSSECRET!
+        accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+        accessSecret: process.env.TWITTER_ACCESS_SECRET!
     }).readOnly;
     const currentUser = await client.currentUser();
     const timeline = await client.v2.userTimeline(String(currentUser.id), {
@@ -56,18 +61,30 @@ async function main() {
     const sortedTweets = tweets.sort((a, b) => {
         return a.timestamp > b.timestamp ? -1 : 1;
     });
-    const restTweets = await fs.readFile(tweetsJSONFilePath, "utf-8");
-    await fs.writeFile(
-        tweetsJSONFilePath,
-        sortedTweets.map((result) => JSON.stringify(result)).join("\n") + restTweets,
-        {
+    try {
+        const restTweets = await fs.readFile(tweetsJsonFilePath, "utf-8");
+        await fs.writeFile(
+            tweetsJsonFilePath,
+            sortedTweets.map((result) => JSON.stringify(result)).join("\n") + restTweets,
+            {
+                encoding: "utf-8"
+            }
+        );
+        console.log(`Added ${sortedTweets.length} tweets`);
+    } catch (error) {
+        await fs.writeFile(tweetsJsonFilePath, sortedTweets.map((result) => JSON.stringify(result)).join("\n"), {
             encoding: "utf-8"
-        }
-    );
-    console.log(`Added ${sortedTweets.length} tweets`);
+        });
+        console.log("Can not append. Instead of it, create new tweeets.json", error);
+    }
 }
 
-main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+const selfScriptFilePath = url.fileURLToPath(import.meta.url);
+if (process.argv[1] === selfScriptFilePath) {
+    const dataDir = path.join(__dirname, "../data");
+    const tweetsJsonFilePath = path.join(dataDir, "tweets.json");
+    fetchTweets(tweetsJsonFilePath).catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
+}

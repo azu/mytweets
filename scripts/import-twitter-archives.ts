@@ -1,18 +1,19 @@
 import fs from "fs/promises";
 import path from "path";
+import * as url from "url";
 import { fileURLToPath } from "url";
 import { SearchKeywordResponse } from "./types/archieves.js";
 import { convertArchieveToLineTweet } from "./utils/converter.js";
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-async function main() {
-    const rootDir = path.join(__dirname, "../twitter-archives");
-    const outputDir = path.join(__dirname, "../data");
-    const outputFilePath = path.join(outputDir, "/tweets.json");
-    const outputRFilePath = path.join(outputDir, "/tweets-r.json");
-    const outputStatFilePath = path.join(outputDir, "/tweets-stats.json");
-    const dirents = await fs.readdir(rootDir, {
+// import archives
+// 1. import twitter-archives/tweet*.json → data/tweet.json
+export async function importArchives(tweetsJsonFilePath: string) {
+    const twitterArchivesDir = path.join(__dirname, "../twitter-archives");
+    await fs.mkdir(path.dirname(tweetsJsonFilePath), {
+        recursive: true
+    });
+    const dirents = await fs.readdir(twitterArchivesDir, {
         withFileTypes: true
     });
     const filePathsList = dirents
@@ -20,7 +21,7 @@ async function main() {
             return dirent.isFile() && dirent.name.startsWith("tweet") && path.extname(dirent.name) === ".js";
         })
         .map((dirent) => {
-            return path.join(rootDir, dirent.name);
+            return path.join(twitterArchivesDir, dirent.name);
         });
     const fileContentList: SearchKeywordResponse[][] = await Promise.all(
         filePathsList.map(async (filePath) => {
@@ -37,26 +38,24 @@ async function main() {
     const sortedResults = results.sort((a, b) => {
         return a.timestamp > b.timestamp ? 1 : -1;
     });
-    await fs.writeFile(outputFilePath, sortedResults.map((result) => JSON.stringify(result)).join("\n"), "utf-8");
+    // await fs.writeFile(outputFilePath, sortedResults.map((result) => JSON.stringify(result)).join("\n"), "utf-8");
     // first line is latest
     await fs.writeFile(
-        outputRFilePath,
+        tweetsJsonFilePath,
         sortedResults
             .reverse()
             .map((result) => JSON.stringify(result))
             .join("\n"),
         "utf-8"
     );
-    await fs.writeFile(
-        outputStatFilePath,
-        JSON.stringify({
-            total: sortedResults.length
-        }),
-        "utf-8"
-    );
 }
 
-main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+const selfScriptFilePath = url.fileURLToPath(import.meta.url);
+if (process.argv[1] === selfScriptFilePath) {
+    const dataDir = path.join(__dirname, "../data");
+    const tweetsJsonFilePath = path.join(dataDir, "tweets.json");
+    importArchives(tweetsJsonFilePath).catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
+}

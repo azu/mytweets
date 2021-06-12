@@ -1,6 +1,6 @@
-import { ArchivesURL, ArchiveTweet } from "../types/archieves";
-import { LineTweet } from "../../src/types";
-import { API_URL, TweetAPIResponse } from "../types/api-response";
+import type { ArchivesURL, ArchiveTweet } from "../types/archieves";
+import type { LineTweet } from "../types/output";
+import type { API_URL, TweetAPIResponse } from "../types/twitter-api";
 
 function replaceRange({
     text,
