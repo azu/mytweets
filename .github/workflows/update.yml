@@ -1,4 +1,4 @@
-name: Scheduled Update
+name: Update
 on:
   push:
     branches:
