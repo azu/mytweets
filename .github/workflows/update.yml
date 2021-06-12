@@ -12,7 +12,7 @@ jobs:
   update:
     name: "Update"
     runs-on: ubuntu-18.04
-    if: github.repository.full_name != 'azu/mytweets'
+    if: github.repository != 'azu/mytweets'
     steps:
       - name: checkout
         uses: actions/checkout@v2
