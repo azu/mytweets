@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "mytweets",
   "version": "1.0.0",
   "description": "Search My all tweets",
@@ -17,19 +18,6 @@
   "author": "azu",
   "sideEffects": false,
   "type": "module",
-  "main": "lib/mytweets.js",
-  "module": "module/mytweets.js",
-  "types": "lib/mytweets.d.ts",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
-  "files": [
-    "bin/",
-    "lib/",
-    "module/",
-    "src/"
-  ],
   "scripts": {
     "import-twitter-archives": "node --loader ts-node/esm ./scripts/import-twitter-archives.ts",
     "fetch-tweets": "node --loader ts-node/esm ./scripts/fetch-tweets.ts",
@@ -57,9 +45,6 @@
     "@types/firstline": "^2.0.1",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.12.2",
-    "aws-sdk": "^2.927.0",
-    "dotenv": "^10.0.0",
-    "firstline": "^2.0.2",
     "lint-staged": "^11.0.0",
     "mocha": "^9.0.0",
     "prettier": "^2.3.1",
@@ -69,6 +54,9 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.927.0",
+    "dotenv": "^10.0.0",
+    "firstline": "^2.0.2",
     "read-last-lines": "^1.8.0",
     "twitter-api-v2": "^1.1.0"
   }
