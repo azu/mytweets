@@ -340,7 +340,9 @@ function HomePage() {
                 display: "flex",
                 flexDirection: "column",
                 padding: "16px",
-                width: "100%"
+                width: "100%",
+                maxWidth: "800px",
+                margin: "auto"
             }}
         >
             <Head>
