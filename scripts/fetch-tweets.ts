@@ -63,13 +63,11 @@ export async function fetchTweets(tweetsJsonFilePath: string) {
     });
     try {
         const restTweets = await fs.readFile(tweetsJsonFilePath, "utf-8");
-        await fs.writeFile(
-            tweetsJsonFilePath,
-            sortedTweets.map((result) => JSON.stringify(result)).join("\n") + "\n" + restTweets,
-            {
-                encoding: "utf-8"
-            }
-        );
+        const newLines =
+            sortedTweets.length > 0 ? sortedTweets.map((result) => JSON.stringify(result)).join("\n") + "\n" : "";
+        await fs.writeFile(tweetsJsonFilePath, newLines + restTweets, {
+            encoding: "utf-8"
+        });
         console.log(`Added ${sortedTweets.length} tweets`);
     } catch (error) {
         await fs.writeFile(tweetsJsonFilePath, sortedTweets.map((result) => JSON.stringify(result)).join("\n"), {
