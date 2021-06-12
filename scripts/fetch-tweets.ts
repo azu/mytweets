@@ -65,7 +65,7 @@ export async function fetchTweets(tweetsJsonFilePath: string) {
         const restTweets = await fs.readFile(tweetsJsonFilePath, "utf-8");
         await fs.writeFile(
             tweetsJsonFilePath,
-            sortedTweets.map((result) => JSON.stringify(result)).join("\n") + restTweets,
+            sortedTweets.map((result) => JSON.stringify(result)).join("\n") + "\n" + restTweets,
             {
                 encoding: "utf-8"
             }
