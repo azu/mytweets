@@ -274,6 +274,13 @@ const useSearch = () => {
         });
     }, [searchResults]);
     useEffect(() => {
+        const url = new URL(location.href);
+        if (url.searchParams.has("q")) {
+            setQuery(url.searchParams.get("q"));
+        }
+    }, []);
+
+    useEffect(() => {
         const searchParams = new URLSearchParams([["q", query]]);
         const abortController = new AbortController();
         (async function fetchMain() {
