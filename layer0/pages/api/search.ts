@@ -31,9 +31,12 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "invalid request" });
     }
     const query = req.query.q;
-    const max = req.query.max ? Number(req.query.max) : 100;
+    const max = req.query.max ? Number(req.query.max) : 30;
     if (typeof query !== "string") {
-        return res.write("No Content");
+        return res.write("?q= should be string");
+    }
+    if (typeof max !== "number") {
+        return res.write("?max= should be number");
     }
     const queries = query.split(/\s+/).filter((query) => query.length > 0);
     const WHERE = queries
@@ -41,11 +44,11 @@ export default async function handler(req, res) {
             return `lower(s.text) like '${escapeLike("%" + query.toLowerCase() + "%")}'`;
         })
         .join(" AND ");
-    const LIMIT = 30;
+    const LIMIT = max;
     const S3Query = WHERE
         ? `SELECT * FROM s3object s WHERE ${WHERE} LIMIT ${LIMIT}`
         : `SELECT * FROM s3object s LIMIT ${LIMIT}`;
-    console.log(query);
+    console.log(S3Query);
     const result = await S3.selectObjectContent({
         Bucket: process.env.S3_BUCKET_NAME,
         Key: "tweets.json.gz",
