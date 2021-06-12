@@ -339,7 +339,7 @@ function HomePage() {
             style={{
                 display: "flex",
                 flexDirection: "column",
-                padding: "2rem",
+                padding: "16px",
                 width: "100%"
             }}
         >
@@ -351,9 +351,8 @@ function HomePage() {
                 style={{
                     width: "100%",
                     display: "flex",
-                    alignContent: "center",
-                    alignItems: "center",
-                    flexWrap: "wrap"
+                    flexWrap: "wrap",
+                    flexDirection: "column"
                 }}
             >
                 <div>
@@ -375,12 +374,7 @@ function HomePage() {
                             type={"text"}
                             value={query}
                             onChange={(event) => handlers.search(event.currentTarget.value)}
-                            style={{
-                                fontSize: "20px",
-                                width: "18em",
-                                margin: "0 0.5em",
-                                padding: "0 0.2em"
-                            }}
+                            style={{ width: "100%" }}
                         />
                     </label>
                 </div>
