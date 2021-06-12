@@ -1,12 +1,19 @@
 # mytweets
 
 Search My all tweets.
+
+## Features
+
+- Imports Archive of your data
+- Fetch the latest tweets via Twitter API
+- Full text search on to all your tweets
+
 ## Usage
 
 ### Import from Twitter archive
 
 1. Request [your Twitter archive](https://help.twitter.com/en/managing-your-account/how-to-download-your-twitter-archive)
-2. Download Twitter archive file like `twitter-*.zip@
+2. Download Twitter archive file like `twitter-*.zip`
 3. Copy `tweeet*.js` to `twitter-archives/`
 
 ```
