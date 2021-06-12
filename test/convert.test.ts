@@ -1,9 +1,59 @@
-import { convertToLineTweet } from "../scripts/utils/converter.js";
+import { convertAPIToLineTweet, convertArchieveToLineTweet } from "../scripts/utils/converter.js";
 import assert from "assert";
+
+describe("convertAPIToLineTweet", function () {
+    it("convert API to line", () => {
+        const result = convertAPIToLineTweet({
+            text: 'byteだけなのかな "Amazon S3 Select を使用して、サーバーまたはデータベースなしでデータをクエリする | Amazon Web Services ブログ" https://t.co/dAci0eDikh',
+            entities: {
+                annotations: [
+                    {
+                        start: 0,
+                        end: 3,
+                        probability: 0.4888,
+                        type: "Product",
+                        normalized_text: "byte"
+                    },
+                    {
+                        start: 12,
+                        end: 27,
+                        probability: 0.6727,
+                        type: "Product",
+                        normalized_text: "Amazon S3 Select"
+                    },
+                    {
+                        start: 63,
+                        end: 81,
+                        probability: 0.2608,
+                        type: "Organization",
+                        normalized_text: "Amazon Web Services"
+                    }
+                ],
+                urls: [
+                    {
+                        start: 88,
+                        end: 111,
+                        url: "https://t.co/dAci0eDikh",
+                        expanded_url:
+                            "https://aws.amazon.com/jp/blogs/news/querying-data-without-servers-or-databases-using-amazon-s3-select/",
+                        display_url: "aws.amazon.com/jp/blogs/news/…"
+                    }
+                ]
+            },
+            created_at: "2021-06-12T03:35:17.000Z",
+            id: "1403556486475698176"
+        });
+        assert.deepStrictEqual(result, {
+            id: "1403556486475698176",
+            text: 'byteだけなのかな "Amazon S3 Select を使用して、サーバーまたはデータベースなしでデータをクエリする | Amazon Web Services ブログ" https://aws.amazon.com/jp/blogs/news/querying-data-without-servers-or-databases-using-amazon-s3-select/',
+            timestamp: 1623468917000
+        });
+    });
+});
 
 describe("convertToLineTweet", function () {
     it("convert archive to line", () => {
-        const result = convertToLineTweet({
+        const result = convertArchieveToLineTweet({
             retweeted: false,
             source: '<a href="https://github.com/r7kamura/retro-twitter-client" rel="nofollow">Retro twitter client</a>',
             entities: {

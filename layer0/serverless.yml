@@ -1,14 +1,5 @@
-variablesResolutionMode: 20210326
 myTweets:
   component: "@sls-next/serverless-component@1.20.0-alpha.23"
   inputs:
     bucketName: "serverless-mytweets"
     name: "serverless-mytweets"
-plugins:
-  - serverless-s3-sync
-custom:
-  s3Sync:
-    - bucketName: ${{env:S3_BUCKET_NAME}}
-      localDir: s3
-
-resources: ${{file(resources.yml)}}

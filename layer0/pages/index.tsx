@@ -3,6 +3,7 @@ import { SearchResponse, LineTweetResponse } from "./api/search";
 import { useDebounce } from "use-debounce";
 import Head from "next/head";
 import { SiTwitter } from "react-icons/si";
+import { FaSpinner } from "react-icons/fa";
 import dayjs from "dayjs";
 
 const GlobalStyle = () => {
@@ -244,15 +245,29 @@ const GlobalStyle = () => {
                 .Tweet-Item:hover {
                     background-color: rgba(0, 0, 0, 0.02);
                 }
+
+                .fa-spin {
+                    animation: fa-spin 2s infinite linear;
+                }
+
+                @keyframes fa-spin {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(359deg);
+                    }
+                }
             `}
         </style>
     );
 };
 const useSearch = () => {
     const [query, setQuery] = useState<string>("");
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [searchCounts, setSearchCounts] = useState<{ progress: number; total: number }>({ progress: 0, total: 0 });
     const [searchResults, setSearchResults] = useState<LineTweetResponse[]>([]);
-    const [debouncedQuery] = useDebounce(query, 300);
+    const [debouncedQuery] = useDebounce(query, 350);
     const sortedSearchResults = useMemo(() => {
         return searchResults.sort((a, b) => {
             return a.timestamp < b.timestamp ? 1 : -1;
@@ -260,9 +275,9 @@ const useSearch = () => {
     }, [searchResults]);
     useEffect(() => {
         const searchParams = new URLSearchParams([["q", query]]);
-        const decoder = new TextDecoder();
         const abortController = new AbortController();
         (async function fetchMain() {
+            setIsFetching(true);
             const response = await fetch("/api/search?" + searchParams.toString(), {
                 signal: abortController.signal
             });
@@ -272,10 +287,12 @@ const useSearch = () => {
                 total: json.stats.BytesScanned
             });
             setSearchResults(json.results);
+            setIsFetching(false);
         })().catch((error) => {
             console.log("Fetch Abort", error);
         });
         return () => {
+            setIsFetching(false);
             // setSearchCounts({
             //     total: 0,
             //     progress: 0
@@ -294,6 +311,7 @@ const useSearch = () => {
     );
     return {
         query,
+        isFetching,
         searchCounts,
         searchResults,
         sortedSearchResults,
@@ -301,10 +319,8 @@ const useSearch = () => {
     };
 };
 
-type HomePageProps = {};
-
-function HomePage(props: HomePageProps) {
-    const { query, sortedSearchResults, searchCounts, handlers } = useSearch();
+function HomePage() {
+    const { query, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch();
     return (
         <div
             style={{
@@ -361,51 +377,61 @@ function HomePage(props: HomePageProps) {
                     </span>
                 </div>
             </div>
-            <ul
-                style={{
-                    listStyle: "none",
-                    padding: 0
-                }}
-            >
-                {sortedSearchResults.map((item) => {
-                    const day = dayjs(item.timestamp);
-                    return (
-                        <li
-                            key={item.id}
-                            className={"Tweet-Item"}
-                            style={{
-                                paddingBottom: "1rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                border: "1px solid rgb(235, 238, 240)",
-                                boxSizing: "border-box"
-                            }}
-                        >
-                            <span
+            {isFetching ? (
+                <FaSpinner
+                    size={24}
+                    className={"fa-spin"}
+                    style={{
+                        margin: "8px 0"
+                    }}
+                />
+            ) : (
+                <ul
+                    style={{
+                        listStyle: "none",
+                        padding: 0
+                    }}
+                >
+                    {sortedSearchResults.map((item) => {
+                        const day = dayjs(item.timestamp);
+                        return (
+                            <li
+                                key={item.id}
+                                className={"Tweet-Item"}
                                 style={{
-                                    fontSize: "90%"
+                                    paddingBottom: "1rem",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    border: "1px solid rgb(235, 238, 240)",
+                                    boxSizing: "border-box"
                                 }}
                             >
-                                <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
-                                    <SiTwitter size={12} />
-                                    <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
-                                </a>
-                            </span>
-                            <p
-                                style={{
-                                    margin: 0,
-                                    padding: "0 12px",
-                                    whiteSpace: "pre-wrap",
-                                    wordBreak: "break-word"
-                                }}
-                                dangerouslySetInnerHTML={{
-                                    __html: item.html
-                                }}
-                            />
-                        </li>
-                    );
-                })}
-            </ul>
+                                <span
+                                    style={{
+                                        fontSize: "90%"
+                                    }}
+                                >
+                                    <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
+                                        <SiTwitter size={12} />
+                                        <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
+                                    </a>
+                                </span>
+                                <p
+                                    style={{
+                                        margin: 0,
+                                        padding: "0 12px",
+                                        whiteSpace: "pre-wrap",
+                                        wordBreak: "break-word"
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: item.html
+                                    }}
+                                />
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
         </div>
     );
 }

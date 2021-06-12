@@ -2,14 +2,13 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { SearchKeywordResponse } from "./types/archieves.js";
-import { convertToLineTweet } from "./utils/converter.js";
+import { convertArchieveToLineTweet } from "./utils/converter.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main() {
     const rootDir = path.join(__dirname, "../twitter-archives");
     const outputDir = path.join(__dirname, "../data");
-    const outputRawFilePath = path.join(outputDir, "/tweets-raw.json");
     const outputFilePath = path.join(outputDir, "/tweets.json");
     const outputRFilePath = path.join(outputDir, "/tweets-r.json");
     const outputStatFilePath = path.join(outputDir, "/tweets-stats.json");
@@ -32,13 +31,14 @@ async function main() {
     );
     const results = fileContentList.flatMap((content) => {
         return content.flatMap((item) => {
-            return convertToLineTweet(item.tweet);
+            return convertArchieveToLineTweet(item.tweet);
         });
     });
     const sortedResults = results.sort((a, b) => {
         return a.timestamp > b.timestamp ? 1 : -1;
     });
     await fs.writeFile(outputFilePath, sortedResults.map((result) => JSON.stringify(result)).join("\n"), "utf-8");
+    // first line is latest
     await fs.writeFile(
         outputRFilePath,
         sortedResults
@@ -47,7 +47,6 @@ async function main() {
             .join("\n"),
         "utf-8"
     );
-    await fs.writeFile(outputRawFilePath, JSON.stringify(sortedResults.reverse()), "utf-8");
     await fs.writeFile(
         outputStatFilePath,
         JSON.stringify({

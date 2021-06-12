@@ -29,7 +29,7 @@ export interface Entities {
     hashtags: Hashtag[];
     symbols: any[];
     user_mentions: UserMention[];
-    urls: URL[];
+    urls: ArchivesURL[];
     media?: Media[];
 }
 
@@ -69,7 +69,7 @@ export enum Resize {
     Fit = "fit"
 }
 
-export interface URL {
+export interface ArchivesURL {
     url: string;
     expanded_url: string;
     display_url: string;

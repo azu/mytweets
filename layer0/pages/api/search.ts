@@ -45,7 +45,6 @@ export default async function handler(req, res) {
     const S3Query = WHERE
         ? `SELECT * FROM s3object s WHERE ${WHERE} LIMIT ${LIMIT}`
         : `SELECT * FROM s3object s LIMIT ${LIMIT}`;
-    console.log("bucket", process.env.S3_BUCKET_NAME);
     console.log(query);
     const result = await S3.selectObjectContent({
         Bucket: process.env.S3_BUCKET_NAME,
