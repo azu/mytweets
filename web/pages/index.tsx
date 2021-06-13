@@ -259,6 +259,18 @@ const GlobalStyle = () => {
                         transform: rotate(359deg);
                     }
                 }
+
+                .Icon-Center {
+                    display: inline-flex;
+                    align-content: center;
+                    align-items: center;
+                }
+                .Icon-Center:first-child {
+                    padding-right: 4px;
+                }
+                .Icon-Center:not(:first-child) {
+                    padding: 0 4px;
+                }
             `}
         </style>
     );
@@ -439,11 +451,13 @@ function HomePage() {
                             >
                                 <span
                                     style={{
-                                        fontSize: "90%"
+                                        fontSize: "16px",
+                                        display: "flex",
+                                        alignContent: "center",
+                                        alignItems: "center"
                                     }}
                                 >
                                     <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
-                                        <SiTwitter size={12} />
                                         <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
                                     </a>
                                     <a
@@ -456,13 +470,9 @@ function HomePage() {
                                         )}&src=typed_query&f=live`}
                                         title={"Search this date"}
                                         target={"_blank"}
+                                        className="Icon-Center"
                                     >
-                                        <MdUpdate
-                                            size={12}
-                                            style={{
-                                                margin: "0 4px"
-                                            }}
-                                        />
+                                        <MdUpdate size={16} style={{}} />
                                     </a>
 
                                     <a
@@ -477,13 +487,9 @@ function HomePage() {
                                         )}&src=typed_query&f=live`}
                                         title={"Search this date from me"}
                                         target={"_blank"}
+                                        className="Icon-Center"
                                     >
-                                        <MdPerson
-                                            size={12}
-                                            style={{
-                                                margin: "0 4px"
-                                            }}
-                                        />
+                                        <MdPerson size={16} />
                                     </a>
                                 </span>
                                 <p
