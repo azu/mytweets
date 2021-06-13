@@ -79,18 +79,22 @@ export default async function handler(req, res) {
         Expression: S3Query
     }).promise();
     const events = result.Payload;
-    let text = "";
+    // Payload will be split by byte
+    // We need to concat these as buffer
+    // https://dev.classmethod.jp/articles/python-s3-select-decode-last/
+    let buffer = Buffer.alloc(0);
     let stats: StatsEvent["Details"] = null;
     for await (const event of events) {
         if (typeof event === "string") {
-            text += event;
-        } else if ("Records" in event && event.Records) {
-            text += event.Records.Payload.toString();
+            // skip
+        } else if (typeof event === "object" && "Records" in event && event.Records && event.Records.Payload) {
+            buffer = Buffer.concat([buffer, event.Records.Payload]);
         } else if ("Stats" in event) {
             stats = event.Stats.Details;
         }
     }
-    const lineObjects = text
+    const lineObjects = buffer
+        .toString()
         .split("\n")
         .filter((line) => line !== "")
         .map((line) => JSON.parse(line));
