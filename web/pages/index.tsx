@@ -266,6 +266,9 @@ const GlobalStyle = () => {
 const useSearch = () => {
     const [screenName, setScreenName] = useState<string>("");
     const [query, setQuery] = useState<string>("");
+    const [max, setMax] = useState<number>(30);
+    // Paging timestamp
+    const [afterTimestamp, setAfterTimestamp] = useState<null | number>(null);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [searchCounts, setSearchCounts] = useState<{ progress: number; total: number }>({ progress: 0, total: 0 });
     const [searchResults, setSearchResults] = useState<LineTweetResponse[]>([]);
@@ -275,6 +278,10 @@ const useSearch = () => {
             return a.timestamp < b.timestamp ? 1 : -1;
         });
     }, [searchResults]);
+    const moreTweets = useMemo(() => {
+        return searchResults.length === 30;
+    }, [searchResults]);
+
     useEffect(() => {
         const url = new URL(location.href);
         if (url.searchParams.has("q")) {
@@ -286,7 +293,12 @@ const useSearch = () => {
     }, []);
 
     useEffect(() => {
-        const searchParams = new URLSearchParams([["q", query]]);
+        const searchParams = new URLSearchParams(
+            [
+                ["q", debouncedQuery],
+                ["max", String(max)]
+            ].concat(afterTimestamp ? [["afterTimestamp", String(afterTimestamp)]] : [])
+        );
         const abortController = new AbortController();
         (async function fetchMain() {
             setIsFetching(true);
@@ -309,21 +321,30 @@ const useSearch = () => {
             //     total: 0,
             //     progress: 0
             // });
-            // setSearchResults([]);
             abortController.abort();
         };
-    }, [debouncedQuery]);
+    }, [debouncedQuery, max, afterTimestamp]);
     const handlers = useMemo(
         () => ({
             search: (query: string) => {
+                setSearchResults([]);
+                setAfterTimestamp(null);
                 setQuery(query);
+            },
+            moreTweets: () => {
+                const lastResult = searchResults[searchResults.length - 1];
+                console.log("lastResult", lastResult);
+                if (lastResult) {
+                    setAfterTimestamp(lastResult.timestamp);
+                }
             }
         }),
-        []
+        [searchResults]
     );
     return {
         screenName,
         query,
+        moreTweets,
         isFetching,
         searchCounts,
         searchResults,
@@ -333,7 +354,7 @@ const useSearch = () => {
 };
 
 function HomePage() {
-    const { query, screenName, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch();
+    const { query, screenName, moreTweets, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch();
     return (
         <div
             style={{
@@ -376,7 +397,7 @@ function HomePage() {
                         <input
                             type={"text"}
                             value={query}
-                            onChange={(event) => handlers.search(event.currentTarget.value)}
+                            onInput={(event) => handlers.search(event.currentTarget.value)}
                             style={{ width: "100%" }}
                         />
                     </label>
@@ -481,6 +502,16 @@ function HomePage() {
                     })}
                 </ul>
             )}
+            {moreTweets ? (
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column"
+                    }}
+                >
+                    <button onClick={handlers.moreTweets}>More Tweets</button>
+                </div>
+            ) : null}
         </div>
     );
 }

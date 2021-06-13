@@ -1,7 +1,6 @@
 import twitter from "twitter-text";
 import aws from "aws-sdk";
 import type { StatsEvent } from "aws-sdk/clients/s3";
-
 const S3 = new aws.S3({
     apiVersion: "2006-03-01",
     credentials: new aws.Credentials({
@@ -39,6 +38,7 @@ export default async function handler(req, res) {
     }
     const query = req.query.q;
     const max = req.query.max ? Number(req.query.max) : 30;
+    const afterTimestamp = req.query.afterTimestamp ? Number(req.query.afterTimestamp) : undefined;
     if (typeof query !== "string") {
         return res.write("?q= should be string");
     }
@@ -46,11 +46,16 @@ export default async function handler(req, res) {
         return res.write("?max= should be number");
     }
     const queries = query.split(/\s+/).filter((query) => query.length > 0);
-    const WHERE = queries
-        .map((query) => {
-            return `lower(s.text) like '${escapeLike("%" + query.toLowerCase() + "%")}'`;
-        })
-        .join(" AND ");
+    const WHERE = (() => {
+        const queryWhereStatement = queries
+            .map((query) => {
+                return `lower(s.text) like '${escapeLike("%" + query.toLowerCase() + "%")}'`;
+            })
+            .join(" AND ");
+        const pagingWhereStatement =
+            afterTimestamp !== undefined && !Number.isNaN(afterTimestamp) ? `s."timestamp" < ${afterTimestamp}` : "";
+        return [queryWhereStatement, pagingWhereStatement].filter((statement) => statement.length > 0).join("AND");
+    })();
     const LIMIT = max;
     const S3Query = WHERE
         ? `SELECT * FROM s3object s WHERE ${WHERE} LIMIT ${LIMIT}`
