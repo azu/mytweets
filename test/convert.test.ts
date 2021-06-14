@@ -1,4 +1,3 @@
-1111;
 import { convertAPIToLineTweet, convertArchieveToLineTweet } from "../scripts/utils/converter.js";
 import assert from "assert";
 
