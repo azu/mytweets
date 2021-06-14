@@ -4,6 +4,7 @@ import * as url from "url";
 import { fileURLToPath } from "url";
 import { SearchKeywordResponse } from "./types/archieves.js";
 import { convertArchieveToLineTweet } from "./utils/converter.js";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // import archives
@@ -30,8 +31,13 @@ export async function importArchives(tweetsJsonFilePath: string) {
             return JSON.parse(json);
         })
     );
+    const uniqueIdSet = new Set<string>();
     const results = fileContentList.flatMap((content) => {
         return content.flatMap((item) => {
+            if (uniqueIdSet.has(item.tweet.id)) {
+                return [];
+            }
+            uniqueIdSet.add(item.tweet.id);
             return convertArchieveToLineTweet(item.tweet);
         });
     });
