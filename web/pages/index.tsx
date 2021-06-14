@@ -381,6 +381,7 @@ function HomePage() {
             <Head>
                 <title>mytweets</title>
                 <base target="_blank" />
+                <link rel="shortcut icon" href="/favicon.ico" />
             </Head>
             <GlobalStyle />
             <div
