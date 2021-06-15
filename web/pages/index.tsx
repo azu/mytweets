@@ -382,6 +382,11 @@ function HomePage() {
                 <title>mytweets</title>
                 <base target="_blank" />
                 <link rel="shortcut icon" href="/favicon.ico" />
+                <link rel="icon" type="image/x-icon" sizes="16x16 32x32" href="/favicon.ico" />
+                <link rel="icon" sizes="192x192" href="/favicon-192.png" />
+                <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180-precomposed.png" />
+                <meta name="msapplication-TileColor" content="#FFFFFF" />
+                <meta name="msapplication-TileImage" content="/favicon-114-precomposed.png" />
             </Head>
             <GlobalStyle />
             <div
