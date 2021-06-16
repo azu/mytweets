@@ -1,6 +1,7 @@
 import twitter from "twitter-text";
 import aws from "aws-sdk";
 import type { StatsEvent } from "aws-sdk/clients/s3";
+
 const S3 = new aws.S3({
     apiVersion: "2006-03-01",
     credentials: new aws.Credentials({
@@ -32,20 +33,20 @@ const escapeLike = (s: string) => {
             .replace(/>/g, "_")
     );
 };
-export default async function handler(req, res) {
-    if (req.method !== "GET") {
-        return res.status(400).json({ message: "invalid request" });
-    }
-    const query = req.query.q;
-    const max = req.query.max ? Number(req.query.max) : 30;
-    const afterTimestamp = req.query.afterTimestamp ? Number(req.query.afterTimestamp) : undefined;
-    if (typeof query !== "string") {
-        return res.write("?q= should be string");
-    }
-    if (typeof max !== "number") {
-        return res.write("?max= should be number");
-    }
-    const queries = query.split(/\s+/).filter((query) => query.length > 0);
+
+export const fetchS3Select = async ({
+    query,
+    max,
+    afterTimestamp
+}: {
+    query: string;
+    max: number;
+    afterTimestamp?: number;
+}) => {
+    const queries = query
+        .split(/\s+/)
+        .map((query) => query.trim())
+        .filter((query) => query.length > 0);
     const WHERE = (() => {
         const queryWhereStatement = queries
             .map((query) => {
@@ -105,6 +106,26 @@ export default async function handler(req, res) {
             timestamp: lineObject.timestamp
         };
     });
+    return {
+        stats,
+        responses
+    };
+};
+
+export default async function handler(req, res) {
+    if (req.method !== "GET") {
+        return res.status(400).json({ message: "invalid request" });
+    }
+    const query = req.query.q;
+    const max = req.query.max ? Number(req.query.max) : 30;
+    const afterTimestamp = req.query.afterTimestamp ? Number(req.query.afterTimestamp) : undefined;
+    if (typeof query !== "string") {
+        return res.write("?q= should be string");
+    }
+    if (typeof max !== "number") {
+        return res.write("?max= should be number");
+    }
+    const { stats, responses } = await fetchS3Select({ query, max, afterTimestamp });
     res.json({
         stats,
         results: responses
