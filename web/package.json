@@ -10,9 +10,9 @@
   "private": true,
   "name": "mytweets",
   "dependencies": {
-    "aws-sdk": "^2.927.0",
+    "aws-sdk": "^2.929.0",
     "dayjs": "^1.10.5",
-    "next": "^10.2.3",
+    "next": "^11.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
@@ -23,7 +23,7 @@
     "use-debounce": "^6.0.1"
   },
   "devDependencies": {
-    "@types/react": "^17.0.3",
+    "@types/react": "^17.0.11",
     "@types/split2": "^3.2.0",
     "@types/sqlstring": "^2.3.0",
     "dotenv": "^10.0.0",

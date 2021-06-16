@@ -6,7 +6,9 @@ import { SiTwitter } from "react-icons/si";
 import { FaSpinner } from "react-icons/fa";
 import { MdUpdate, MdPerson } from "react-icons/md";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { GlobalStyle } from "../components/GlobalStyle";
+dayjs.extend(utc);
 
 const DEFAULT_MAX = 30;
 type ResponseStat = { BytesProcessed: number; BytesScanned: number };
@@ -231,7 +233,7 @@ function SearchResultContent(props: {
                     }}
                 >
                     {props.searchResults.map((item) => {
-                        const day = dayjs(item.timestamp);
+                        const day = dayjs.utc(item.timestamp);
                         return (
                             <li
                                 key={item.id}
@@ -258,9 +260,9 @@ function SearchResultContent(props: {
                                     <a
                                         href={`https://twitter.com/search?q=${encodeURIComponent(
                                             "filter:follows since:" +
-                                                day.format("YYYY-MM-DD_HH:mm:ss") +
+                                                day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
                                                 " until:" +
-                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss") +
+                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
                                                 ""
                                         )}&src=typed_query&f=live`}
                                         title={"Search this date"}
@@ -275,9 +277,9 @@ function SearchResultContent(props: {
                                             "from:" +
                                                 props.screenName +
                                                 " since:" +
-                                                day.format("YYYY-MM-DD_HH:mm:ss") +
+                                                day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
                                                 " until:" +
-                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss") +
+                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
                                                 ""
                                         )}&src=typed_query&f=live`}
                                         title={"Search this date from me"}
