@@ -12,7 +12,13 @@ Search My all tweets.
 
 ## Usage
 
-## Setups
+1. Click [Use this template](https://github.com/azu/mytweets/generate) and forked repository
+2. git clone the forked repositoy
+
+```shell
+git clone https://github.com/you/mytweets
+cd mytweets
+```
 
 This application require following tokens:
 
@@ -127,10 +133,12 @@ If you do not have `serverless` command, please see following document and setup
 Run following command that deploy your website to Cloudfront and S3.
 
 ```
+npm install --global serverless
+# deploy
 cd web/
 yarn install
 sls deploy
-# cloudfront url
+# after it, cloudfront url shown
 ```
 
 ## Schedule Updating
