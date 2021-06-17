@@ -166,7 +166,7 @@ This template repository includes [.github/workflows/update.yml](.github/workflo
 
 These value is same to `.env`.
 
-![secrets options](img/secrets.png)
+![secrets options](docs/secrets.png)
 
 ### Private Page
 
