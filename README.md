@@ -13,7 +13,8 @@ Search My all tweets.
 ## Usage
 
 1. Click [Use this template](https://github.com/azu/mytweets/generate) and forked repository
-2. git clone the forked repositoy
+   - You can select Public or Private
+2. git clone the forked repository
 
 ```shell
 git clone https://github.com/you/mytweets
