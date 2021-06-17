@@ -174,6 +174,12 @@ You can implement Basic Auth using [CloudFront Functions](https://docs.aws.amazo
 
 - [CloudFront + S3 + CloudFront Functions で BASIC 認証をかける](https://zenn.dev/mallowlabs/articles/cloudfront-functions-basic-auth)
 
+### Default Search Query
+
+The web app support following url queries:
+
+- `?q=<search keyword>`
+
 ## Changelog
 
 See [Releases page](https://github.com/azu/mytweets/releases).
