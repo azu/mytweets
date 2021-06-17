@@ -6,9 +6,13 @@ Search My all tweets.
 
 ## Features
 
-- Imports Archive of your data
-- Fetch the latest tweets via Twitter API
-- Full text search on to all your tweets
+- Allow importing Archive of [your twitter archive data](https://help.twitter.com/managing-your-account/accessing-your-twitter-data)
+   - It means that this app support to search your all twitter history
+- Fetch the latest tweets via Twitter API and merge with your history
+   - Also, it can be automated
+- Support Full text search on to all your tweets
+   - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
+   - You can create private search engine for you
 
 ## Usage
 
@@ -142,7 +146,9 @@ sls deploy
 # after it, cloudfront url shown
 ```
 
-## Schedule Updating
+## Tips
+
+### Schedule Updating
 
 You can automate `yarn fetch-tweets` and `yarn upload-tweets` using CI like GitHub Action.
 
@@ -150,17 +156,23 @@ This template repository includes [.github/workflows/update.yml](.github/workflo
 
 1. Visit your fork repository's setting `https://github.com/owner/mytweets/settings/secrets/actions`
 2. Put following env to Action's secrets
-   - `S3_AWS_ACCESS_KEY_ID`
-   - `S3_AWS_SECRET_ACCESS_KEY`
-   - `S3_BUCKET_NAME`
-   - `TWITTER_APP_KEY`
-   - `TWITTER_APP_SECRET`
-   - `TWITTER_ACCESS_TOKEN`
-   - `TWITTER_ACCESS_SECRET`
+    - `S3_AWS_ACCESS_KEY_ID`
+    - `S3_AWS_SECRET_ACCESS_KEY`
+    - `S3_BUCKET_NAME`
+    - `TWITTER_APP_KEY`
+    - `TWITTER_APP_SECRET`
+    - `TWITTER_ACCESS_TOKEN`
+    - `TWITTER_ACCESS_SECRET`
 
 These value is same to `.env`.
 
 ![secrets options](img/secrets.png)
+
+### Private Page
+
+You can implement Basic Auth using [CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html).
+
+- [CloudFront + S3 + CloudFront Functions で BASIC 認証をかける](https://zenn.dev/mallowlabs/articles/cloudfront-functions-basic-auth)
 
 ## Changelog
 
