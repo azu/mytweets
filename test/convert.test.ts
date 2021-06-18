@@ -99,7 +99,7 @@ describe("convertToLineTweet", function () {
         });
         assert.deepStrictEqual(result, {
             id: "783296194701172736",
-            text: '週一更新のJavaScript情報サイト "http://JSer.info" https:/https://jser.info/cript #JSer',
+            text: '週一更新のJavaScript情報サイト "http://JSer.info" https://jser.info/ #JavaScript #JSer',
             timestamp: 1475587340000
         });
     });
