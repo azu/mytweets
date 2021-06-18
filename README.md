@@ -14,6 +14,10 @@ Search your all tweets.
    - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
    - You can create private search engine for you
 
+## Overview
+
+![Overview](docs/architecture.png)
+
 ## Usage
 
 1. Click [Use this template](https://github.com/azu/mytweets/generate) and forked repository
