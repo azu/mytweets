@@ -184,6 +184,10 @@ The web app support following url queries:
 
 - `?q=<search keyword>`
 
+## Related
+
+- [azu/delete-tweets: Twitterのアーカイブから削除候補のTweetsを抽出する補助ツールと削除するツール。](https://github.com/azu/delete-tweets)
+
 ## Changelog
 
 See [Releases page](https://github.com/azu/mytweets/releases).
