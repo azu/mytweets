@@ -55,7 +55,7 @@ export const fetchS3Select = async ({
             .join(" AND ");
         const pagingWhereStatement =
             afterTimestamp !== undefined && !Number.isNaN(afterTimestamp) ? `s."timestamp" < ${afterTimestamp}` : "";
-        return [queryWhereStatement, pagingWhereStatement].filter((statement) => statement.length > 0).join("AND");
+        return [queryWhereStatement, pagingWhereStatement].filter((statement) => statement.length > 0).join(" AND ");
     })();
     const LIMIT = max;
     const S3Query = WHERE
