@@ -84,6 +84,7 @@ const useSearch = ({
             moreTweets: () => {
                 const lastResult = searchResults[searchResults.length - 1];
                 if (lastResult) {
+                    setSearchResults([]);
                     setAfterTimestamp(lastResult.timestamp);
                 }
             }
