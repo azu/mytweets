@@ -22,7 +22,10 @@ const rewriteTextWithUrls = (text: string, urls: ArchivesURL[] = []): string => 
         return text;
     }
     let result = text;
-    urls.forEach((url) => {
+    urls.sort((a, b) => {
+        // b > a
+        return Number(b.indices[0]) - Number(a.indices[0]);
+    }).forEach((url) => {
         result = replaceRange({
             text: result,
             start: Number(url.indices[0]),
@@ -46,7 +49,10 @@ const rewriteTextWithAPIUrls = (text: string, urls: API_URL[] = []): string => {
         return text;
     }
     let result = text;
-    urls.forEach((url) => {
+    urls.sort((a, b) => {
+        // b > a
+        return Number(b.start) - Number(a.start);
+    }).forEach((url) => {
         result = replaceRange({
             text: result,
             start: Number(url.start),
