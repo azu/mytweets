@@ -167,7 +167,7 @@ function HomePage({
     searchResults?: LineTweetResponse[];
     stats?: ResponseStat;
 }) {
-    const { query, screenName, moreTweets, isFetching, sortedSearchResults, searchCounts, handlers } = useSearch({
+    const { query, screenName, moreTweets, isFetching, sortedSearchResults, handlers } = useSearch({
         initialQuery: q,
         screen_name: screen_name,
         initialSearchResults: searchResults,
@@ -222,10 +222,7 @@ function HomePage({
                     </label>
                 </div>
                 <div>
-                    <span>
-                        Hit: {sortedSearchResults.length} Count: {searchCounts.BytesProcessed} /{" "}
-                        {searchCounts.BytesScanned}
-                    </span>
+                    <span>Hit: {sortedSearchResults.length}</span>
                 </div>
             </div>
             <SearchResultContent
