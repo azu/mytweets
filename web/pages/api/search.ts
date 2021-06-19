@@ -117,7 +117,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "invalid request" });
     }
     const query = req.query.q;
-    const max = req.query.max ? Number(req.query.max) : 30;
+    const max = req.query.max ? Number(req.query.max) : 20;
     const afterTimestamp = req.query.afterTimestamp ? Number(req.query.afterTimestamp) : undefined;
     if (typeof query !== "string") {
         return res.write("?q= should be string");

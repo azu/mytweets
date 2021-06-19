@@ -61,7 +61,7 @@ TWITTER_ACCESS_SECRET="YOUR_TWITTER_ACCESS_TOKEN_SECRET"
 
 1. Create S3 bucket for saving your tweets.
 2. Create API key on [AWS IAM](https://console.aws.amazon.com/iam/home?region=us-east-1#/users)
-    - This API key require GET,PUT,List permissions for S3
+   - This API key require GET,PUT,List permissions for S3
 
 Example Permission policies:
 
@@ -107,7 +107,7 @@ twitter-archives/
 ```
 
 4. Run import commands:
-   
+
 ```
 yarn install
 yarn import-twitter-archives # Concvert twitter-archives
@@ -160,13 +160,13 @@ This template repository includes [.github/workflows/update.yml](.github/workflo
 
 1. Visit your fork repository's setting `https://github.com/owner/mytweets/settings/secrets/actions`
 2. Put following env to Action's secrets
-    - `S3_AWS_ACCESS_KEY_ID`
-    - `S3_AWS_SECRET_ACCESS_KEY`
-    - `S3_BUCKET_NAME`
-    - `TWITTER_APP_KEY`
-    - `TWITTER_APP_SECRET`
-    - `TWITTER_ACCESS_TOKEN`
-    - `TWITTER_ACCESS_SECRET`
+   - `S3_AWS_ACCESS_KEY_ID`
+   - `S3_AWS_SECRET_ACCESS_KEY`
+   - `S3_BUCKET_NAME`
+   - `TWITTER_APP_KEY`
+   - `TWITTER_APP_SECRET`
+   - `TWITTER_ACCESS_TOKEN`
+   - `TWITTER_ACCESS_SECRET`
 
 These value is same to `.env`.
 
@@ -183,6 +183,8 @@ You can implement Basic Auth using [CloudFront Functions](https://docs.aws.amazo
 The web app support following url queries:
 
 - `?q=<search keyword>`
+- `?max=<max search count>`
+    - Default: `20`
 
 ## Related
 

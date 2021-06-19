@@ -11,22 +11,24 @@ import { GlobalStyle } from "../components/GlobalStyle";
 
 dayjs.extend(utc);
 
-const DEFAULT_MAX = 30;
+const DEFAULT_MAX = 20;
 type ResponseStat = { BytesProcessed: number; BytesScanned: number };
 const useSearch = ({
     initialQuery,
+    initialMax,
     screen_name,
     initialSearchResults,
     initialStats
 }: {
     initialQuery?: string;
+    initialMax?: number;
     screen_name?: string;
     initialSearchResults?: LineTweetResponse[];
     initialStats?: ResponseStat;
 }) => {
     const [screenName, setScreenName] = useState<string>(screen_name ?? "");
     const [query, setQuery] = useState<string>(initialQuery ?? "");
-    const [max, setMax] = useState<number>(DEFAULT_MAX);
+    const [max, setMax] = useState<number>(initialMax ?? DEFAULT_MAX);
     // Paging timestamp
     const [afterTimestamp, setAfterTimestamp] = useState<null | number>(null);
     const [isFetching, setIsFetching] = useState<boolean>(!initialSearchResults);
@@ -52,7 +54,9 @@ const useSearch = ({
             return;
         }
         const searchParams = new URLSearchParams(
-            [["q", debouncedQuery]].concat(afterTimestamp ? [["afterTimestamp", String(afterTimestamp)]] : [])
+            [["q", debouncedQuery]]
+                .concat(afterTimestamp ? [["afterTimestamp", String(afterTimestamp)]] : [])
+                .concat(max !== DEFAULT_MAX ? [["max", String(max)]] : [])
         );
         const abortController = new AbortController();
         (async function fetchMain() {
@@ -105,17 +109,23 @@ const useSearch = ({
 };
 
 export async function getServerSideProps(context) {
-    const { q, screen_name } = context.query;
+    const { q, max, screen_name } = context.query;
+    const maxWithDefault = max ?? DEFAULT_MAX;
+    const screenNameWithDefault = screen_name ?? "";
     if (!q) {
         return {
-            props: {}
+            props: {
+                max: maxWithDefault,
+                screen_name: screenNameWithDefault
+            }
         };
     }
-    const { responses, stats } = await fetchS3Select({ query: q, max: DEFAULT_MAX });
+    const { responses, stats } = await fetchS3Select({ query: q, max: maxWithDefault });
     return {
         props: {
             q: q,
-            screen_name: screen_name ?? "",
+            max: maxWithDefault,
+            screen_name: screenNameWithDefault,
             searchResults: responses,
             stats
         }
@@ -156,22 +166,22 @@ function CompositionInput(props: { style?: CSSProperties; value: string; onInput
     );
 }
 
-function HomePage({
-    q,
-    screen_name,
-    searchResults,
-    stats
-}: {
-    q: string;
-    screen_name: string;
+type HomePageProps = {
+    q?: string;
+    max?: number;
+    screen_name?: string;
     searchResults?: LineTweetResponse[];
     stats?: ResponseStat;
-}) {
+};
+
+function HomePage(props: HomePageProps) {
+    console.log("props", props);
     const { query, screenName, moreTweets, isFetching, sortedSearchResults, handlers } = useSearch({
-        initialQuery: q,
-        screen_name: screen_name,
-        initialSearchResults: searchResults,
-        initialStats: stats
+        initialQuery: props.q,
+        initialMax: props.max,
+        screen_name: props.screen_name,
+        initialSearchResults: props.searchResults,
+        initialStats: props.stats
     });
     return (
         <div
