@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useMemo, useState } from "react";
 import { SearchResponse, LineTweetResponse, fetchS3Select } from "./api/search";
 import { useDebounce } from "use-debounce";
 import Head from "next/head";
@@ -8,6 +8,7 @@ import { MdUpdate, MdPerson } from "react-icons/md";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { GlobalStyle } from "../components/GlobalStyle";
+
 dayjs.extend(utc);
 
 const DEFAULT_MAX = 30;
@@ -121,6 +122,40 @@ export async function getServerSideProps(context) {
     };
 }
 
+function CompositionInput(props: { style?: CSSProperties; value: string; onInput: (value: string) => void }) {
+    const [inputValue, setInputValue] = useState(props.value);
+    const [isComposing, setIsComposing] = useState(false);
+    const onInput = useCallback(
+        (event) => {
+            const value = event.currentTarget.value;
+            setInputValue(value);
+            if (!isComposing) {
+                props.onInput(value);
+            }
+        },
+        [isComposing]
+    );
+    const onCompositionStart = useCallback((e) => {
+        setIsComposing(true);
+    }, []);
+    let onCompositionEnd = useCallback((event) => {
+        setIsComposing(false);
+        const value = event.currentTarget.value;
+        setInputValue(value);
+        props.onInput(value);
+    }, []);
+    return (
+        <input
+            type={"text"}
+            value={inputValue}
+            onInput={onInput}
+            style={props.style}
+            onCompositionStart={onCompositionStart}
+            onCompositionEnd={onCompositionEnd}
+        />
+    );
+}
+
 function HomePage({
     q,
     screen_name,
@@ -183,12 +218,7 @@ function HomePage({
                     </a>
                     <label>
                         Search:
-                        <input
-                            type={"text"}
-                            value={query}
-                            onInput={(event) => handlers.search(event.currentTarget.value)}
-                            style={{ width: "100%" }}
-                        />
+                        <CompositionInput value={query} onInput={handlers.search} style={{ width: "100%" }} />
                     </label>
                 </div>
                 <div>
