@@ -19,9 +19,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "import-twitter-archives": "node --loader ts-node/esm ./scripts/import-twitter-archives.ts",
-    "fetch-tweets": "node --loader ts-node/esm ./scripts/fetch-tweets.ts",
-    "upload-tweets": "node --loader ts-node/esm ./scripts/upload-tweets.ts",
+    "import-twitter-archives": "ts-node-esm ./scripts/import-twitter-archives.ts",
+    "fetch-tweets": "ts-node-esm ./scripts/fetch-tweets.ts",
+    "upload-tweets": "ts-node-esm ./scripts/upload-tweets.ts",
     "test": "mocha",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "git config --local core.hooksPath .githooks",
@@ -49,9 +49,9 @@
     "mocha": "^9.0.0",
     "prettier": "^2.3.1",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.0.0",
+    "ts-node": "^10.7.0",
     "ts-node-test-register": "^10.0.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "aws-sdk": "^2.927.0",

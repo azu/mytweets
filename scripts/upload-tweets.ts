@@ -42,14 +42,25 @@ export async function uploadTweets(tweetsJsonFilePath: string) {
         Bucket: bucket,
         Key: "tweets.json.gz"
     });
+    // just upload if .gz exists
+    const tweetsJsonFilePathGzip = tweetsJsonFilePath + ".gz";
+    if (fs.existsSync(tweetsJsonFilePath)) {
+        console.log("update gzip file");
+        fs.createReadStream(tweetsJsonFilePathGzip)
+            .pipe(writeStream)
+            .on("error", (error) => {
+                console.error(error);
+            });
+        return await promise;
+    }
+    console.log("update file with compressing");
     fs.createReadStream(tweetsJsonFilePath)
         .pipe(zlib.createGzip())
         .pipe(writeStream)
         .on("error", (error) => {
             console.error(error);
         });
-    await promise;
-    console.log("upload success");
+    return await promise;
 }
 
 const selfScriptFilePath = url.fileURLToPath(import.meta.url);
