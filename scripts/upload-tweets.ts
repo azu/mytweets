@@ -44,7 +44,7 @@ export async function uploadTweets(tweetsJsonFilePath: string) {
     });
     // just upload if .gz exists
     const tweetsJsonFilePathGzip = tweetsJsonFilePath + ".gz";
-    if (fs.existsSync(tweetsJsonFilePath)) {
+    if (fs.existsSync(tweetsJsonFilePathGzip)) {
         console.log("update gzip file");
         fs.createReadStream(tweetsJsonFilePathGzip)
             .pipe(writeStream)
