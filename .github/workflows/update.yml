@@ -11,7 +11,7 @@ on:
 jobs:
   update:
     name: "Update"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: github.repository != 'azu/mytweets' # DO NOT RUN in azu/mytweets
     steps:
       - name: checkout
