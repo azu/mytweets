@@ -1,6 +1,6 @@
 # mytweets
 
-Search your all tweets.
+Search all your tweets.
 
 ![Img](./docs/img.png)
 
