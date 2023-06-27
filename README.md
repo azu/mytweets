@@ -93,6 +93,22 @@ TWITTER_ACCESS_TOKEN="YOUR_TWITTER_ACCESS_TOKEN"
 TWITTER_ACCESS_SECRET="YOUR_TWITTER_ACCESS_TOKEN_SECRET"
 ```
 
+## Bluesky
+
+If you want to get [Bluesky](https://bsky.app/) posts, you can use `yarn run fetch-bsky` instead of `yarn run fetch-tweets`.
+
+1. Add your bluesky account to `.env`.
+
+```ts
+S3_AWS_ACCESS_KEY_ID="x"
+S3_AWS_SECRET_ACCESS_KEY="x"
+S3_BUCKET_NAME="x"
+BLUESKY_IDENTIFIER="xxx.bsky.social"
+BLUESKY_APPPASSWORD="x"
+```
+
+2. Use `yarn run fetch-bsky` instead of `yarn run fetch-tweets` in [update workflow](./.github/workflows/update.yml
+
 ### Import from Twitter archive
 
 1. Request [your Twitter archive](https://help.twitter.com/en/managing-your-account/how-to-download-your-twitter-archive)
