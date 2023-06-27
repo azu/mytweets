@@ -1,9 +1,8 @@
-import { TwitterApi } from "twitter-api-v2";
+import { TwitterApi, TweetUserTimelineV2Paginator } from "twitter-api-v2";
 import firstline from "firstline";
 import * as url from "url";
 import path from "path";
 import type { LineTweet } from "./types/output";
-import { TweetUserTimelineV2Paginator } from "twitter-api-v2/dist/paginators";
 import { convertAPIToLineTweet } from "./utils/converter.js";
 import * as fs from "fs/promises";
 import { config } from "dotenv";
