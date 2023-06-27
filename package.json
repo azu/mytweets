@@ -22,6 +22,7 @@
     "import-twitter-archives": "ts-node-esm ./scripts/import-twitter-archives.ts",
     "fetch-tweets": "ts-node-esm ./scripts/fetch-tweets.ts",
     "fetch-bsky": "ts-node-esm ./scripts/fetch-bsky.ts",
+    "upload-tweets": "ts-node-esm ./scripts/upload-tweets.ts",
     "test": "mocha",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "git config --local core.hooksPath .githooks",
