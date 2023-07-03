@@ -234,7 +234,7 @@ For bugs and feature requests, [please create an issue](https://github.com/azu/m
 
 ## Author
 
-- azu: [GitHub](https://github.com/azu), [Twitter](https://twitter.com/azu_re)
+- azu: [GitHub](https://github.com/azu), [Twitter](https://twitter.com/azu_re), [Bluesky](https://bsky.app/profile/azu.bsky.social)
 
 ## License
 
