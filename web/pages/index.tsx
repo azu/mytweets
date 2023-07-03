@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useEffect, useMemo, useState } from "react";
+import { CSSProperties, ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { SearchResponse, LineTweetResponse, fetchS3Select } from "./api/search";
 import { useDebounce } from "use-debounce";
 import Head from "next/head";
@@ -46,15 +46,19 @@ const useSearch = ({
         });
     }, [searchResults]);
     const moreTweets = useMemo(() => {
-        return searchResults.length === DEFAULT_MAX;
+        return searchResults.length === max;
     }, [searchResults]);
 
     useEffect(() => {
         if (searchResults.length !== 0) {
             return;
         }
+        const k = new URL(location.href).searchParams.get("k");
         const searchParams = new URLSearchParams(
-            [["q", debouncedQuery]]
+            [
+                ["q", debouncedQuery],
+                ["k", k]
+            ]
                 .concat(afterTimestamp ? [["afterTimestamp", String(afterTimestamp)]] : [])
                 .concat(max !== DEFAULT_MAX ? [["max", String(max)]] : [])
         );
@@ -175,10 +179,9 @@ type HomePageProps = {
 };
 
 function HomePage(props: HomePageProps) {
-    console.log("props", props);
     const { query, screenName, moreTweets, isFetching, sortedSearchResults, handlers } = useSearch({
         initialQuery: props.q,
-        initialMax: props.max,
+        initialMax: props.max ? Number(props.max) : DEFAULT_MAX,
         screen_name: props.screen_name,
         initialSearchResults: props.searchResults,
         initialStats: props.stats
@@ -246,6 +249,25 @@ function HomePage(props: HomePageProps) {
     );
 }
 
+export const StatusLink = (props: { itemId: string; children: ReactElement }) => {
+    // at://did:plc:niluiwex7fsnjak2wxs4j47y/app.bsky.feed.post/3jzhqaznbqk2i
+    // -> https://bsky.app/profile/{did}/post/{contentId}
+    if (props.itemId.startsWith("at://")) {
+        const [_, did, contentId] = props.itemId.match(/at:\/\/(did:plc:.*?)\/app.bsky.feed.post\/(.*)/);
+        return (
+            <a href={`https://bsky.app/profile/${did}/post/${contentId}`} target={"_blank"}>
+                {props.children}
+            </a>
+        );
+    }
+    // twitter.com/_/status/{itemId}
+    return (
+        <a href={`https://twitter.com/_/status/${props.itemId}`} target={"_blank"}>
+            {props.children}
+        </a>
+    );
+};
+
 function SearchResultContent(props: {
     isFetching: boolean;
     searchResults: LineTweetResponse[];
@@ -272,6 +294,7 @@ function SearchResultContent(props: {
                 >
                     {props.searchResults.map((item) => {
                         const day = dayjs.utc(item.timestamp);
+                        const isTwitter = !item.id.startsWith("at://");
                         return (
                             <li
                                 key={item.id}
@@ -292,40 +315,44 @@ function SearchResultContent(props: {
                                         alignItems: "center"
                                     }}
                                 >
-                                    <a href={`https://twitter.com/_/status/${item.id}`} target={"_blank"}>
+                                    <StatusLink itemId={item.id}>
                                         <time dateTime={day.toISOString()}>{day.format("YYYY-MM-DD HH:mm")}</time>
-                                    </a>
-                                    <a
-                                        href={`https://twitter.com/search?q=${encodeURIComponent(
-                                            "filter:follows since:" +
-                                                day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
-                                                " until:" +
-                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
-                                                ""
-                                        )}&src=typed_query&f=live`}
-                                        title={"Search this date"}
-                                        target={"_blank"}
-                                        className="Icon-Center"
-                                    >
-                                        <MdUpdate size={16} style={{}} />
-                                    </a>
+                                    </StatusLink>
+                                    {isTwitter && (
+                                        <>
+                                            <a
+                                                href={`https://twitter.com/search?q=${encodeURIComponent(
+                                                    "filter:follows since:" +
+                                                        day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
+                                                        " until:" +
+                                                        day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
+                                                        ""
+                                                )}&src=typed_query&f=live`}
+                                                title={"Search this date"}
+                                                target={"_blank"}
+                                                className="Icon-Center"
+                                            >
+                                                <MdUpdate size={16} style={{}} />
+                                            </a>
 
-                                    <a
-                                        href={`https://twitter.com/search?q=${encodeURIComponent(
-                                            "from:" +
-                                                props.screenName +
-                                                " since:" +
-                                                day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
-                                                " until:" +
-                                                day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
-                                                ""
-                                        )}&src=typed_query&f=live`}
-                                        title={"Search this date from me"}
-                                        target={"_blank"}
-                                        className="Icon-Center"
-                                    >
-                                        <MdPerson size={16} />
-                                    </a>
+                                            <a
+                                                href={`https://twitter.com/search?q=${encodeURIComponent(
+                                                    "from:" +
+                                                        props.screenName +
+                                                        " since:" +
+                                                        day.format("YYYY-MM-DD_HH:mm:ss_UTC") +
+                                                        " until:" +
+                                                        day.add(1, "day").format("YYYY-MM-DD_HH:mm:ss_UTC") +
+                                                        ""
+                                                )}&src=typed_query&f=live`}
+                                                title={"Search this date from me"}
+                                                target={"_blank"}
+                                                className="Icon-Center"
+                                            >
+                                                <MdPerson size={16} />
+                                            </a>
+                                        </>
+                                    )}
                                 </span>
                                 <p
                                     style={{

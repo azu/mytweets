@@ -7,12 +7,12 @@ Search all your tweets.
 ## Features
 
 - Allow importing Archive of [your twitter archive data](https://help.twitter.com/managing-your-account/accessing-your-twitter-data)
-   - It means that this app support to search your all twitter history
+    - It means that this app support to search your all twitter history
 - Fetch the latest tweets via Twitter API and merge with your history
-   - Also, it can be automated
+    - Also, it can be automated
 - Support Full text search on to all your tweets
-   - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
-   - You can create private search engine for you
+    - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
+    - You can create private search engine for you
 
 ## Overview
 
@@ -21,7 +21,7 @@ Search all your tweets.
 ## Usage
 
 1. Click [Use this template](https://github.com/azu/mytweets/generate) and forked repository
-   - You can select Public or Private
+    - You can select Public or Private
 2. git clone the forked repository
 
 ```shell
@@ -61,7 +61,7 @@ TWITTER_ACCESS_SECRET="YOUR_TWITTER_ACCESS_TOKEN_SECRET"
 
 1. Create S3 bucket for saving your tweets.
 2. Create API key on [AWS IAM](https://console.aws.amazon.com/iam/home?region=us-east-1#/users)
-   - This API key require GET,PUT,List permissions for S3
+    - This API key require GET,PUT,List permissions for S3
 
 Example Permission policies:
 
@@ -148,23 +148,33 @@ yarn upload-tweets # upload to S3
 
 ### Deploy Website
 
-> Require: `serverless` command and AWS Credentials
+You can deploy web frontend to Web Hosting like [Vercel](https://vercel.com/dashboard).
 
-If you do not have `serverless` command, please see following document and setup.
+1. Create [Vercel](https://vercel.com/dashboard) account
+2. Create new project
+3. Select "Import Git Repository"
+4. Select your forked repository
+5. Set `web/` to "Root Directory"
+6. Set following values to "Environment Variables" 
+    - `S3_AWS_ACCESS_KEY_ID`
+    - `S3_AWS_SECRET_ACCESS_KEY`
+    - `S3_BUCKET_NAME`
+    - `NEXT_PUBLIC_AUTH_KEY=<secure random string>`
+    - ⚠️ If you want to limit access to your website, you should set secure random string to `NEXT_PUBLIC_AUTH_KEY`
+    - ℹ️ If you want to allow public access to your website, you should set `"public"` to `NEXT_PUBLIC_AUTH_KEY=public`
+7. Deploy
+8. You can access to your website like `https://<yourmytweets>.vercel.app/?k=<NEXT_PUBLIC_AUTH_KEY>`.
 
-- [Serverless Framework - AWS Lambda Guide - Installing The Serverless Framework](https://www.serverless.com/framework/docs/providers/aws/guide/installation/)
-- [Serverless Framework - AWS Lambda Guide - Credentials](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/)
+### Default Search Query
 
-Run following command that deploy your website to Cloudfront and S3.
+`https://<yourmytweets>.vercel.app/?k=<NEXT_PUBLIC_AUTH_KEY>&q=<search keyword>&max=<max search count>`
 
-```
-npm install --global serverless
-# deploy
-cd web/
-yarn install
-sls deploy
-# after it, cloudfront url shown
-```
+The web app support following url queries:
+
+- `?k=<Your Secret Key - same with NEXT_PUBLIC_AUTH_KEY>`
+- `&q=<search keyword>`
+- `&max=<max search count>`
+    - Default: `20`
 
 ## Tips
 
@@ -176,31 +186,21 @@ This template repository includes [.github/workflows/update.yml](.github/workflo
 
 1. Visit your fork repository's setting `https://github.com/owner/mytweets/settings/secrets/actions`
 2. Put following env to Action's secrets
-   - `S3_AWS_ACCESS_KEY_ID`
-   - `S3_AWS_SECRET_ACCESS_KEY`
-   - `S3_BUCKET_NAME`
-   - `TWITTER_APP_KEY`
-   - `TWITTER_APP_SECRET`
-   - `TWITTER_ACCESS_TOKEN`
-   - `TWITTER_ACCESS_SECRET`
+    - `S3_AWS_ACCESS_KEY_ID`
+    - `S3_AWS_SECRET_ACCESS_KEY`
+    - `S3_BUCKET_NAME`
+    - If you want to fetch tweets
+      - `TWITTER_APP_KEY`
+      - `TWITTER_APP_SECRET`
+      - `TWITTER_ACCESS_TOKEN`
+      - `TWITTER_ACCESS_SECRET`
+    - If you want to fetch Bluesky posts
+      - `BLUESKY_IDENTIFIER`
+      - `BLUESKY_APPPASSWORD`
 
 These value is same to `.env`.
 
 ![secrets options](docs/secrets.png)
-
-### Private Page
-
-You can implement Basic Auth using [CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html).
-
-- [CloudFront + S3 + CloudFront Functions で BASIC 認証をかける](https://zenn.dev/mallowlabs/articles/cloudfront-functions-basic-auth)
-
-### Default Search Query
-
-The web app support following url queries:
-
-- `?q=<search keyword>`
-- `?max=<max search count>`
-    - Default: `20`
 
 ## Related
 

@@ -21,6 +21,7 @@ export const convertPostToLineTweet = (post: PostView): LineTweet => {
         throw new Error("post.record.text is not string");
     }
     return {
+        // at://did:plc:niluiwex7fsnjak2wxs4j47y/app.bsky.feed.post/3jz3xglxhzu27@@azu.bsky.social
         id: post.uri,
         text: record.text,
         timestamp: new Date(post.indexedAt).getTime()
