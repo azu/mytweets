@@ -25,21 +25,24 @@ jobs:
       - name: Install
         run: yarn install
       - name: Update
+        shell: bash -ex {0}
         run: |
           mkdir -p ./data
           yarn run download-s3
           ## fetch from Twitter
-          # yarn fetch-twitter
+          # If TWITTER_APP_KEY is defined, fetch from Twitter
+          [ -n "$TWITTER_APP_KEY" ] && yarn run fetch-twitter
           ## fetch from bluesky
-          yarn run fetch-bsky
+          # If BLUESKY_IDENTIFIER is defined, fetch from bluesky
+          [ -n "$BLUESKY_IDENTIFIER" ] && yarn run fetch-bsky
           yarn run upload-s3
         env:
           S3_AWS_ACCESS_KEY_ID: ${{ secrets.S3_AWS_ACCESS_KEY_ID }}
           S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_AWS_SECRET_ACCESS_KEY }}
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-          #          TWITTER_APP_KEY: ${{ secrets.TWITTER_APP_KEY }}
-          #          TWITTER_APP_SECRET: ${{ secrets.TWITTER_APP_SECRET }}
-          #          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          #          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          TWITTER_APP_KEY: ${{ secrets.TWITTER_APP_KEY }}
+          TWITTER_APP_SECRET: ${{ secrets.TWITTER_APP_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
           BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
           BLUESKY_APPPASSWORD: ${{ secrets.BLUESKY_APPPASSWORD }}
