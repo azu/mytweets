@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "prepare": "npm run cpenv",
-    "cpenv": "cp ../.env ./ && echo \"NEXT_PUBLIC_AUTH_KEY=\"dev\"\" >> .env",
+    "local:cp:env": "cp ../.env ./ && echo \"NEXT_PUBLIC_AUTH_KEY=\"dev\"\" >> .env",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"

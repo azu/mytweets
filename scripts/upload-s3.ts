@@ -2,38 +2,41 @@ import path from "path";
 import zlib from "zlib";
 import fs from "fs";
 import url from "url";
-import AWS from "aws-sdk";
+import { Upload } from "@aws-sdk/lib-storage";
+import AWS_S3, { S3 } from "@aws-sdk/client-s3";
 import stream from "stream";
 import { config } from "dotenv";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 config();
-const uploadStream = ({ Bucket, Key }: AWS.S3.PutObjectRequest) => {
-    const s3 = new AWS.S3({
+const uploadStream = ({ Bucket, Key }: AWS_S3.PutObjectCommandInput) => {
+    const s3 = new S3({
         apiVersion: "2006-03-01",
-        credentials: new AWS.Credentials({
+        region: "us-east-1",
+        credentials: {
             accessKeyId: process.env.S3_AWS_ACCESS_KEY_ID!,
             secretAccessKey: process.env.S3_AWS_SECRET_ACCESS_KEY!
-        })
+        }
     });
     const pass = new stream.PassThrough();
     return {
         writeStream: pass,
-        promise: s3
-            .upload({
+        promise: new Upload({
+            client: s3,
+            params: {
                 Bucket,
                 Key,
                 Body: pass,
                 ACL: "private",
                 ContentType: "application/json",
                 ContentEncoding: "gzip"
-            })
-            .promise()
+            }
+        }).done()
     };
 };
 
-export async function uploadTweets(tweetsJsonFilePath: string) {
+export async function uploadS3(tweetsJsonFilePath: string) {
     const bucket = process.env.S3_BUCKET_NAME;
     if (!bucket) {
         throw new Error("S3_BUCKET_NAME should be set!");
@@ -67,7 +70,7 @@ const selfScriptFilePath = url.fileURLToPath(import.meta.url);
 if (process.argv[1] === selfScriptFilePath) {
     const dataDir = path.join(__dirname, "../data");
     const tweetsJsonFilePath = path.join(dataDir, "tweets.json");
-    uploadTweets(tweetsJsonFilePath).catch((error) => {
+    uploadS3(tweetsJsonFilePath).catch((error) => {
         console.error(error);
         process.exit(1);
     });

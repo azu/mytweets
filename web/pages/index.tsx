@@ -54,6 +54,10 @@ const useSearch = ({
             return;
         }
         const k = new URL(location.href).searchParams.get("k");
+        if (!k) {
+            window.alert("?k=<NEXT_PUBLIC_AUTH_KEY> is required");
+            return;
+        }
         const searchParams = new URLSearchParams(
             [
                 ["q", debouncedQuery],

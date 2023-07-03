@@ -20,9 +20,10 @@
   "type": "module",
   "scripts": {
     "import-twitter-archives": "ts-node-esm ./scripts/import-twitter-archives.ts",
+    "download-s3": "ts-node-esm ./scripts/download-s3.ts",
     "fetch-tweets": "ts-node-esm ./scripts/fetch-tweets.ts",
     "fetch-bsky": "ts-node-esm ./scripts/fetch-bsky.ts",
-    "upload-tweets": "ts-node-esm ./scripts/upload-tweets.ts",
+    "upload-s3": "ts-node-esm ./scripts/upload-s3.ts",
     "test": "mocha",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "git config --local core.hooksPath .githooks",
@@ -43,23 +44,24 @@
     "trailingComma": "none"
   },
   "devDependencies": {
-    "@types/firstline": "^2.0.1",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.12.2",
-    "lint-staged": "^11.0.0",
-    "mocha": "^9.0.0",
-    "prettier": "^2.3.1",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.7.0",
+    "@types/firstline": "^2.0.2",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.3.3",
+    "lint-staged": "^13.2.2",
+    "mocha": "^10.2.0",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.1",
     "ts-node-test-register": "^10.0.0",
-    "typescript": "^4.6.3"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "@atproto/api": "^0.3.13",
-    "aws-sdk": "^2.927.0",
+    "@aws-sdk/client-s3": "^3.363.0",
+    "@aws-sdk/lib-storage": "^3.363.0",
     "dotenv": "^10.0.0",
     "firstline": "^2.0.2",
     "read-last-lines": "^1.8.0",
-    "twitter-api-v2": "^1.1.0"
+    "twitter-api-v2": "^1.14.2"
   }
 }

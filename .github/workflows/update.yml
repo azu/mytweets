@@ -8,6 +8,8 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
 jobs:
   update:
     name: "Update"
@@ -15,28 +17,28 @@ jobs:
     if: github.repository != 'azu/mytweets' # DO NOT RUN in azu/mytweets
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
       - name: Install
         run: yarn install
       - name: Update
         run: |
-          yarn fetch-tweets
-          yarn upload-tweets
+          yarn run download-s3
+          ## fetch from Twitter
+          # yarn fetch-twitter
+          ## fetch from bluesky
+          yarn run fetch-bsky
+          yarn run upload-s3
         env:
           S3_AWS_ACCESS_KEY_ID: ${{ secrets.S3_AWS_ACCESS_KEY_ID }}
           S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_AWS_SECRET_ACCESS_KEY }}
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-          TWITTER_APP_KEY: ${{ secrets.TWITTER_APP_KEY }}
-          TWITTER_APP_SECRET: ${{ secrets.TWITTER_APP_SECRET }}
-          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
-      - name: Commit
-        uses: EndBug/add-and-commit@v7
-        with:
-          message: "Update Data"
-          add: 'data'
-          push: true
+          #          TWITTER_APP_KEY: ${{ secrets.TWITTER_APP_KEY }}
+          #          TWITTER_APP_SECRET: ${{ secrets.TWITTER_APP_SECRET }}
+          #          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          #          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
+          BLUESKY_APPPASSWORD: ${{ secrets.BLUESKY_APPPASSWORD }}

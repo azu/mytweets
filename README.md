@@ -8,11 +8,13 @@ Search all your tweets.
 
 - Allow importing Archive of [your twitter archive data](https://help.twitter.com/managing-your-account/accessing-your-twitter-data)
     - It means that this app support to search your all twitter history
-- Fetch the latest tweets via Twitter API and merge with your history
-    - Also, it can be automated
-- Support Full text search on to all your tweets
-    - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
-    - You can create private search engine for you
+- Support [Twitter](https://twitter.com) and [Bluesky](https://bsky.app/)
+- Fetch the latest tweets via Twitter API/BlueSky API and merge with your history
+    - Also, it can be automated by GitHub Actions
+- Web Frontend for your Tweets!
+  - Support Full text search on to all your tweets
+  - [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) based full text search
+  - You can create private search engine for you
 
 ## Overview
 
@@ -128,7 +130,7 @@ twitter-archives/
 yarn install
 yarn import-twitter-archives # Concvert twitter-archives
 yarn fetch-tweets  # Fetch diffs via Twitter API
-yarn upload-tweets # upload to S3
+yarn upload-s3 # upload to S3
 ```
 
 ### Fetch the latest tweets and merge
@@ -138,12 +140,14 @@ yarn upload-tweets # upload to S3
 Fetch the latest tweets from your Twitter account using Twitter API.
 
 `yarn fetch-tweets` command fetch tweets and merge it into `tweets.json`.
-`yarn upload-tweets` upload the `tweets.json` to your S3 bucket.
+`yarn upload-s3` upload the `tweets.json` to your S3 bucket.
 
 ```
 yarn install
+yarn download-s3 # download tweets.json from S3
 yarn fetch-tweets  # Fetch diffs via Twitter API
-yarn upload-tweets # upload to S3
+yarn prefetch-bsky  # Fetch diffs via Bluesky API
+yarn upload-s3 # upload to S3
 ```
 
 ### Deploy Website
@@ -180,7 +184,7 @@ The web app support following url queries:
 
 ### Schedule Updating
 
-You can automate `yarn fetch-tweets` and `yarn upload-tweets` using CI like GitHub Action.
+You can automate `yarn fetch-tweets` and `yarn upload-s3` using CI like GitHub Action.
 
 This template repository includes [.github/workflows/update.yml](.github/workflows/update.yml) that update your `tweets.json` daily.
 
