@@ -26,6 +26,7 @@ jobs:
         run: yarn install
       - name: Update
         run: |
+          mkdir -p ./data
           yarn run download-s3
           ## fetch from Twitter
           # yarn fetch-twitter
