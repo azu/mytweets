@@ -52,6 +52,7 @@ cp .env.example .env
 ```
 S3_AWS_ACCESS_KEY_ID="x"
 S3_AWS_SECRET_ACCESS_KEY="x"
+S3_AWS_REGION="us-east-1"
 S3_BUCKET_NAME="x"
 TWITTER_APP_KEY="YOUR_TWITTER_API_KEY"
 TWITTER_APP_SECRET="YOUR_TWITTER_API_KEY_SECRET"
@@ -88,6 +89,7 @@ Example Permission policies:
 ```shell
 S3_AWS_ACCESS_KEY_ID="x"
 S3_AWS_SECRET_ACCESS_KEY="x"
+S3_AWS_REGION="us-east-1"
 S3_BUCKET_NAME="x"
 TWITTER_APP_KEY="YOUR_TWITTER_API_KEY"
 TWITTER_APP_SECRET="YOUR_TWITTER_API_KEY_SECRET"
@@ -104,6 +106,7 @@ If you want to get [Bluesky](https://bsky.app/) posts, you can use `yarn run fet
 ```ts
 S3_AWS_ACCESS_KEY_ID="x"
 S3_AWS_SECRET_ACCESS_KEY="x"
+S3_AWS_REGION="us-east-1"
 S3_BUCKET_NAME="x"
 BLUESKY_IDENTIFIER="xxx.bsky.social"
 BLUESKY_APPPASSWORD="x"
@@ -192,6 +195,7 @@ This template repository includes [.github/workflows/update.yml](.github/workflo
 2. Put following env to Action's secrets
     - `S3_AWS_ACCESS_KEY_ID`
     - `S3_AWS_SECRET_ACCESS_KEY`
+    - `S3_AWS_REGION`
     - `S3_BUCKET_NAME`
     - If you want to fetch tweets
       - `TWITTER_APP_KEY`
