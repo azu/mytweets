@@ -59,6 +59,7 @@ const escapeLike = (s: string) => {
     );
 };
 
+export type FetchS3SelectResult = { results: LineTweetResponse[]; stats: StatsEvent["Details"] };
 export const fetchS3Select = async ({
     query,
     max,
@@ -67,7 +68,7 @@ export const fetchS3Select = async ({
     query: string;
     max: number;
     afterTimestamp?: number;
-}): Promise<{ results: LineTweetResponse[]; stats: StatsEvent["Details"] }> => {
+}): Promise<FetchS3SelectResult> => {
     const queries = query
         .split(/\s+/)
         .map((query) => query.trim())
