@@ -1,11 +1,11 @@
 "use client";
-import { CSSProperties, useCallback, useState } from "react";
+import React, { CSSProperties, useCallback, useState } from "react";
 
 export function CompositionInput(props: { style?: CSSProperties; value: string; onInput: (value: string) => void }) {
     const [inputValue, setInputValue] = useState(props.value);
     const [isComposing, setIsComposing] = useState(false);
     const onInput = useCallback(
-        (event) => {
+        (event: React.FormEvent<HTMLInputElement>) => {
             const value = event.currentTarget.value;
             setInputValue(value);
             if (!isComposing) {
@@ -14,10 +14,10 @@ export function CompositionInput(props: { style?: CSSProperties; value: string; 
         },
         [isComposing]
     );
-    const onCompositionStart = useCallback((e) => {
+    const onCompositionStart = useCallback(() => {
         setIsComposing(true);
     }, []);
-    const onCompositionEnd = useCallback((event) => {
+    const onCompositionEnd = useCallback((event: React.FormEvent<HTMLInputElement>) => {
         setIsComposing(false);
         const value = event.currentTarget.value;
         setInputValue(value);

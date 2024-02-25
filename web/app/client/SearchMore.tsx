@@ -1,6 +1,6 @@
 "use client";
-import { LineTweetResponse } from "../server/search";
-import { useMemo, useTransition } from "react";
+import { FetchS3SelectResult, LineTweetResponse } from "../server/search";
+import { use, useMemo, useTransition } from "react";
 import { useTypeUrlSearchParams } from "../lib/useTypeUrlSearchParams";
 import { HomPageSearchParam } from "../page";
 
@@ -27,8 +27,11 @@ export const useSearchMore = (props: { searchResults: LineTweetResponse[] }) => 
         isLoadingMore
     } as const;
 };
-export const SearchMore = (props: { searchResults: LineTweetResponse[] }) => {
-    const { handlers, isLoadingMore } = useSearchMore(props);
+export const SearchMore = (props: { retPromise: Promise<FetchS3SelectResult> }) => {
+    const { results } = use(props.retPromise);
+    const { handlers, isLoadingMore } = useSearchMore({
+        searchResults: results
+    });
     return (
         <div
             style={{
