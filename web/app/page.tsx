@@ -1,9 +1,9 @@
 import React, { Suspense, use } from "react";
 import { fetchS3Select, FetchS3SelectResult } from "./server/search";
 import { SiTwitter } from "react-icons/si";
-import { SearchResultContent } from "./server/SearchResult";
+import { SearchResultContent, SearchResultContentStream } from "./server/SearchResult";
 import { SearchBox } from "./client/SearchBox";
-import { SearchMore } from "./client/SearchMore";
+import { SearchMore, SearchMoreStream } from "./client/SearchMore";
 import { TransitionContextProvider } from "./client/TransitionContext";
 import { SearchResultContentWrapper } from "./client/SearchResultContentWrapper";
 
@@ -14,9 +14,15 @@ export type HomPageSearchParam = {
     timestamp?: string;
 };
 
-const HitCount = (props: { retPromise: Promise<FetchS3SelectResult> }) => {
+const HitCount = (props: { count: number }) => {
+    if (Number.isNaN(props.count)) {
+        return <span>Hit: ___</span>;
+    }
+    return <span>Hit: {props.count}</span>;
+};
+const HitCountStream = (props: { retPromise: Promise<FetchS3SelectResult> }) => {
     const ret = use(props.retPromise);
-    return <span>Hit: {ret.results.length}</span>;
+    return <HitCount count={ret.results.length} />;
 };
 
 async function HomePage({
@@ -66,18 +72,27 @@ async function HomePage({
                         <SearchBox query={searchParams.q} />
                     </div>
                     <div>
-                        <Suspense fallback={<span>Hit: …</span>}>
-                            <HitCount retPromise={retPromise} />
+                        <Suspense fallback={<HitCount count={NaN} />}>
+                            <HitCountStream retPromise={retPromise} />
                         </Suspense>
                     </div>
                 </div>
                 <SearchResultContentWrapper>
-                    <Suspense fallback={<>Loading…</>}>
-                        <SearchResultContent retPromise={retPromise} screenName={searchParams.screen_name ?? ""} />
+                    <Suspense
+                        fallback={
+                            <>
+                                <div>Loading...</div>
+                            </>
+                        }
+                    >
+                        <SearchResultContentStream
+                            retPromise={retPromise}
+                            screenName={searchParams.screen_name ?? ""}
+                        />
                     </Suspense>
                 </SearchResultContentWrapper>
                 <Suspense>
-                    <SearchMore retPromise={retPromise} />
+                    <SearchMoreStream retPromise={retPromise} />
                 </Suspense>
             </div>
         </TransitionContextProvider>

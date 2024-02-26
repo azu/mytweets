@@ -26,8 +26,14 @@ const StatusLink = (props: { itemId: string; children: ReactElement }) => {
     );
 };
 
-export function SearchResultContent(props: { retPromise: Promise<FetchS3SelectResult>; screenName: string }) {
-    const { results: searchResults } = use(props.retPromise);
+export const SearchResultContentStream = (props: { retPromise: Promise<FetchS3SelectResult>; screenName: string }) => {
+    const { retPromise, ...other } = props;
+    const ret = use(retPromise);
+    return <SearchResultContent ret={ret} {...other} />;
+};
+
+export function SearchResultContent(props: { ret: FetchS3SelectResult; screenName: string }) {
+    const searchResults = props.ret.results;
     return (
         <div>
             <ul

@@ -27,10 +27,9 @@ export const useSearchMore = (props: { searchResults: LineTweetResponse[] }) => 
         isLoadingMore
     } as const;
 };
-export const SearchMore = (props: { retPromise: Promise<FetchS3SelectResult> }) => {
-    const { results } = use(props.retPromise);
+export const SearchMore = (props: { ret: FetchS3SelectResult }) => {
     const { handlers, isLoadingMore } = useSearchMore({
-        searchResults: results
+        searchResults: props.ret.results
     });
     return (
         <div
@@ -50,4 +49,8 @@ export const SearchMore = (props: { retPromise: Promise<FetchS3SelectResult> }) 
             </button>
         </div>
     );
+};
+export const SearchMoreStream = (props: { retPromise: Promise<FetchS3SelectResult> }) => {
+    const ret = use(props.retPromise);
+    return <SearchMore ret={ret} />;
 };
